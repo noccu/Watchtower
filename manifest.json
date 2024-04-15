@@ -1,0 +1,21 @@
+{
+    "manifest_version": 3,
+    "name": "Not On Our Watch",
+    "description": "Dynamic user-curated warning lists.",
+    "version": "1.0",
+    "minimum_chrome_version": "120",
+    "permissions": ["alarms", "storage"],
+    "background": {
+       "service_worker": "main.js"
+    },
+    "content_scripts": [{
+       "all_frames": false,
+       "run_at": "document_start",
+       "world": "MAIN",
+       "matches": ["*://*.twitter.com/*", "https://x.com/*"],
+       "js": ["platforms/twitter.js"],
+       "css": ["platforms/twitter.css"]
+    }],
+    "host_permissions": ["https://*.gitlab.com/*"]
+ }
+ 
