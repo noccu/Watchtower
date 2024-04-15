@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <title>Watchtower Settings</title>
+    <link rel="stylesheet" href="options.css">
+    <script defer src="options.js"></script>
+</head>
+
+<body>
+    <template id="T_SUB">
+        <label class="sub">
+            <input class="sub-state" type="checkbox" checked/>
+            <span class="sub-name"></span>
+            <a class="sub-url">&#x2302;</a>
+            <span class="sub-num"><span>0</span> entries</span>
+        </label>
+    </template>
+
+    <section id="subscriptions">
+        Subscriptions (<span id="SUB_LEN">0</span>)
+        <ul id="SUB_LIST">
+        </ul>
+        <label>
+            Add a list (URL)
+            <input type="url" id="newList" name="newList" />
+        </label>
+    </section>
+
+    <button id="SAVE">Save</button>
+    <span id="STATUS"></span>
+</body>
+
+</html>

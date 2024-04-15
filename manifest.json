@@ -4,7 +4,7 @@
     "description": "Dynamic user-curated warning lists for internet platforms.",
     "version": "1.0",
     "minimum_chrome_version": "120",
-    "permissions": ["alarms", "storage"],
+    "permissions": ["alarms", "storage", "unlimitedStorage"],
     "background": {
        "service_worker": "main.js"
     },
@@ -16,6 +16,7 @@
        "js": ["platforms/twitter.js"],
        "css": ["platforms/twitter.css"]
     }],
-    "host_permissions": ["https://*.gitlab.com/*"]
+    "options_page": "options.html",
+    "host_permissions": ["file:///"]
  }
  

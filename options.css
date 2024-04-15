@@ -1,0 +1,41 @@
+:root {
+  --highlight: hsl(37.44deg 85.46% 41.13%);
+}
+
+body {
+  /* height: 100vh; */
+  margin: 0;
+  padding: 0.5em;
+  font-family: system-ui;
+  /* background-color: hsl(239.08deg 35.28% 18.74%); */
+  /* background: linear-gradient(180deg, rgba(18,16,41,1) 8%, rgb(55 55 122) 60%, rgb(146 116 96) 100%); */
+  /* color: antiquewhite; */
+}
+
+section {
+  margin: 1em 0.5em;
+}
+
+ul {
+  margin-block-start: 0.5em;
+  padding-inline-start: 20px;
+}
+
+.sub-state {
+  font-size: 1.2em;
+  /* color: var(--highlight) */
+}
+
+.sub-url {
+  font-size: 1.5em;
+  /* color: var(--highlight); */
+}
+
+.sub-name {
+  font-weight: bold;
+}
+
+.sub-num {
+  /* color: var(--highlight); */
+  opacity: 0.6;
+}
