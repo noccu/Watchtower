@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "Not On Our Watch",
-    "description": "Dynamic user-curated warning lists.",
+    "name": "Watchtower",
+    "description": "Dynamic user-curated warning lists for internet platforms.",
     "version": "1.0",
     "minimum_chrome_version": "120",
     "permissions": ["alarms", "storage"],
