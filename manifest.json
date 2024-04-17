@@ -1,22 +1,36 @@
 {
-    "manifest_version": 3,
-    "name": "Watchtower",
-    "description": "Dynamic user-curated warning lists for internet platforms.",
-    "version": "1.0",
-    "minimum_chrome_version": "120",
-    "permissions": ["alarms", "storage", "unlimitedStorage"],
-    "background": {
-       "service_worker": "main.js"
-    },
-    "content_scripts": [{
-       "all_frames": false,
-       "run_at": "document_start",
-       "world": "MAIN",
-       "matches": ["*://*.twitter.com/*", "https://x.com/*"],
-       "js": ["platforms/twitter.js"],
-       "css": ["platforms/twitter.css"]
-    }],
-    "options_page": "options.html",
-    "host_permissions": ["file:///"]
- }
- 
+   "manifest_version": 3,
+   "name": "Watchtower",
+   "description": "Dynamic user-curated warning lists for internet platforms.",
+   "version": "1.0",
+   "minimum_chrome_version": "120",
+   "permissions": [
+      "alarms",
+      "storage",
+      "unlimitedStorage"
+   ],
+   "background": {
+      "service_worker": "src/main.js"
+   },
+   "content_scripts": [
+      {
+         "all_frames": false,
+         "run_at": "document_start",
+         "world": "MAIN",
+         "matches": [
+            "*://*.twitter.com/*",
+            "https://x.com/*"
+         ],
+         "js": [
+            "src/platforms/twitter.js"
+         ],
+         "css": [
+            "src/platforms/twitter.css"
+         ]
+      }
+   ],
+   "options_page": "src/options/options.html",
+   "host_permissions": [
+      "file:///"
+   ]
+}
