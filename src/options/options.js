@@ -1,4 +1,5 @@
 // Globals: this file uses HTML ID vars
+import {CONFIG_DEFAULT} from "../constants.js"
 var DBG_LAST_LIST_DL
 var TOTAL_SUBS = 0
 
