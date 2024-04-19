@@ -1,4 +1,3 @@
-// Globals: this file uses HTML ID vars
 //todo: perhaps use messaging?
 import {downLoadList} from "../lists.js"
 import {CONFIG_DEFAULT} from "../constants.js"
@@ -31,25 +30,37 @@ function fetchNewList(ev) {
     downLoadList(ev.target.value).then(uiAddList)
 }
 
-
-// UI background
+/** @param {List} data */
 function uiAddList(data) {
-    T_SUB.content.querySelector(".sub-name").textContent = data.name
-    T_SUB.content.querySelector(".sub-url").href = data.homepage
-    T_SUB.content.querySelector(".sub-num").textContent = data.size
-    SUB_LIST.append(T_SUB.content.cloneNode(true))
+    DBG_LAST_LIST_DL = data //!dbg
+    let t_sub = getId("t_sub")
+    t_sub.content.querySelector(".sub-name").textContent = data.name
+    t_sub.content.querySelector(".sub-url").href = data.homepage
+    t_sub.content.querySelector(".sub-num").textContent = data.size
+    getId("subList").append(t_sub.content.cloneNode(true))
     TOTAL_SUBS += 1
-    SUB_LEN.textContent = TOTAL_SUBS
+    getId("subLen").textContent = TOTAL_SUBS
 }
 
+//todo: improve error display in UI
 function setStatus(msg) {
-    STATUS.textContent = msg
-    setTimeout(() => STATUS.textContent = "", 1500)
+    let status = getId("status")
+    status.textContent = msg
+    setTimeout(() => status.textContent = "", 1500)
+}
+
+// -> <-
+function getId(id) {
+    return document.getElementById(id)
 }
 
 
 // UI User actions
-newList.addEventListener("keyup", fetchNewList)
-// document.addEventListener('DOMContentLoaded', () => chrome.storage.local.get(CONFIG_DEFAULT, loadOptions))
-loadOptions().then(cfg => cfg.lists.forEach(uiAddList))
-SAVE.addEventListener('click', saveOptions)
+function onOptionsOpened() {
+    getId("newList").addEventListener("keyup", fetchNewList)
+    getId("save").addEventListener('click', saveOptions)
+    // document.addEventListener('DOMContentLoaded', () => chrome.storage.local.get(CONFIG_DEFAULT, loadOptions))
+    loadOptions().then(cfg => cfg.lists.forEach(uiAddList))
+}
+
+if (globalThis.document) onOptionsOpened()
