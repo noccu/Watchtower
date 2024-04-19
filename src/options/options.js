@@ -1,21 +1,9 @@
 // Globals: this file uses HTML ID vars
 var DBG_LAST_LIST_DL
-const DBG = true
 var TOTAL_SUBS = 0
-// The extension's default options
-var CONFIG_DEFAULT = {
-    lists: []
-}
 
-
-function dbgLog(msg) {
-    if (!DBG) return
-    console.log(msg)
-}
 
 function fetchNewList(ev) {
-    dbgLog(ev) //!dbg
-    if (!ev.target.checkValidity()) dbgLog("invalid")
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
     // ev.preventDefault()
     downLoadList(ev.target.value)
