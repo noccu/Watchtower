@@ -22,9 +22,14 @@ export async function loadLists(lists) {
     }
     // Index users for lookup
     for (let list of LISTS) {
-        for (let [plat, userList] of Object.entries(list.users)) {
-            indexUsers(list, plat, userList)
-        }
+        loadSingleList(list)
+    }
+}
+
+/** @param {List} listData */
+async function loadSingleList(listData) {
+    for (let [plat, userList] of Object.entries(listData.users)) {
+        indexUsers(listData, plat, userList)
     }
 }
 
@@ -54,4 +59,42 @@ function indexUsers(list, plat, userList) {
 
 export function lookupUser(plat, userMainKey) {
     return USERS[plat][userMainKey]
+}
+
+/** Adds a list to the saved lists in local storage.
+ * @param {List} listData The JSON data of a list.
+ * @returns {List} The list data/JSON that was given in, for chaining.
+ */
+async function saveNewList(listData) {
+    let savedLists = await retrieveLists()
+    savedLists.push(listData)
+    chrome.storage.local.set({"lists": savedLists})
+    return listData
+}
+
+/** Downloads the given URL and adds it as a list. */
+export async function downLoadList(url) {
+    console.debug("list.js", USERS) //! dbg
+
+    console.log(`Fetching new list: ${url}`)
+    /** @type {List} */
+    let data = await fetch(url).then(
+        data => data.json().catch(e => {
+            console.error(`URL did not return JSON data.\n${e}`)
+            throw e
+        }),
+        e => {
+            console.error(`Failed to download list.\n${e}`)
+            throw e
+        }
+    )
+    // The above should throw out of the function if a problem occurs.
+    console.log("List fetched")
+    // Add some local data
+    data.source = url
+    data.size = Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+    // Save list
+    //? Could this cause data loss/corruption? Especially in loops.
+    saveNewList(data).then(loadSingleList)
+    return data
 }

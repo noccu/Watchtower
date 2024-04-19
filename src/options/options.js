@@ -1,4 +1,6 @@
 // Globals: this file uses HTML ID vars
+//todo: perhaps use messaging?
+import {downLoadList} from "../lists.js"
 import {CONFIG_DEFAULT} from "../constants.js"
 var DBG_LAST_LIST_DL
 var TOTAL_SUBS = 0
@@ -7,17 +9,7 @@ var TOTAL_SUBS = 0
 function fetchNewList(ev) {
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
     // ev.preventDefault()
-    downLoadList(ev.target.value)
-}
-
-async function downLoadList(url) {
-    console.log(`Fetching new list: ${url}`)
-    let data = await fetch(url).then(x => x.json())
-    console.log("List fetched")
-    data["source"] = url
-    uiAddList(data)
-    DBG_LAST_LIST_DL = data
-    //save internally
+    downLoadList(ev.target.value).then(uiAddList)
 }
 
 function loadOptions(savedCfg) {
@@ -32,7 +24,7 @@ function loadOptions(savedCfg) {
 function uiAddList(data) {
     T_SUB.content.querySelector(".sub-name").textContent = data.name
     T_SUB.content.querySelector(".sub-url").href = data.homepage
-    T_SUB.content.querySelector(".sub-num").textContent = data.list.length
+    T_SUB.content.querySelector(".sub-num").textContent = data.size
     SUB_LIST.append(T_SUB.content.cloneNode(true))
     TOTAL_SUBS += 1
     SUB_LEN.textContent = TOTAL_SUBS
