@@ -21,6 +21,10 @@ ul {
   padding-inline-start: 20px;
 }
 
+.sub {
+  display: block;
+}
+
 .sub-state {
   font-size: 1.2em;
   /* color: var(--highlight) */
