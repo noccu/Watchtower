@@ -10,7 +10,8 @@
       "unlimitedStorage"
    ],
    "background": {
-      "service_worker": "src/main.js"
+      "service_worker": "src/main.js",
+      "type": "module"
    },
    "content_scripts": [
       {

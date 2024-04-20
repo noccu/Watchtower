@@ -61,6 +61,10 @@ export function lookupUser(plat, userMainKey) {
     return USERS[plat][userMainKey]
 }
 
+export function getPlatformList(plat) {
+    return USERS[plat]
+}
+
 /** Adds a list to the saved lists in local storage.
  * @param {List} listData The JSON data of a list.
  * @returns {List} The list data/JSON that was given in, for chaining.
