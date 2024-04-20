@@ -1,12 +1,16 @@
 import {PLATFORMS} from "./constants.js"
 
-// Store loaded lists
+/** Stores loaded lists
+ * @type {List[]} */
 var LISTS
+/** Stores user index */
 const USERS = {}
 //todo: Only load lists when activated from content script?
 
 
-/** Simple util function to only get lists, fallback to a default, and log errors */
+/** Simple util function to only get lists, fallback to a default, and log errors
+ * @returns {Promise<List[]>}
+*/
 function retrieveLists() {
     return chrome.storage.local.get({"lists": []}).then(data => data.lists, console.error)
 }
@@ -67,11 +71,17 @@ export function getPlatformList(plat) {
     return USERS[plat]
 }
 
+function getListBySource(src) {
+    return LISTS.find(l => l.source == src)
+}
+
 /** Downloads a list and adds it to extension storage.
  * @param {string} url The URL to a list.
  * @returns {List} The list data/JSON that was given in, for chaining.
  */
 export async function saveNewList(url) {
+    //todo: check if already saved
+    console.debug("Add new list requested")
     let data = await downLoadList(url)
     // Add some local data
     data.source = url
@@ -83,6 +93,30 @@ export async function saveNewList(url) {
 
     loadSingleList(data)
     return data
+}
+
+/** Remove a list by source URL/UID */
+export async function deleteList(src) {
+    console.debug("Delete list requested:", src)
+    let listRef = getListBySource(src)
+    if (!listRef) {
+        console.debug("No such list found.")
+        return false
+    }
+
+    LISTS.splice(LISTS.indexOf(listRef), 1)
+    for (let plat in USERS) {
+        Object.values(USERS[plat]).forEach(user => {
+            user.onLists.splice(user.onLists.indexOf(listRef), 1)
+        })
+    }
+
+    let savedLists = await retrieveLists()
+    savedLists.splice(savedLists.findIndex(sl => sl.source = listRef.source), 1)
+    chrome.storage.local.set({"lists": savedLists})
+
+    console.debug("Deleted list:", listRef.name)
+    return true
 }
 
 /** Downloads the given URL and adds it as a list.

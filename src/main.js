@@ -1,5 +1,5 @@
 import { loadOptions } from "./options/options.js"
-import { loadLists, lookupUser, getPlatformList, saveNewList } from "./lists.js"
+import { loadLists, lookupUser, getPlatformList, saveNewList, deleteList } from "./lists.js"
 
 // Management
 const CONFIG = loadOptions()
@@ -17,8 +17,10 @@ chrome.runtime.onMessage.addListener((msg, sender, answer) => {
         answer(lookupUser(msg.platform, msg.id))
     }
     else if (msg.action == "add-list") {
-        console.debug("Add new list requested")
         saveNewList(msg.url).then(answer)
+    }
+    else if (msg.action == "del-list") {
+        deleteList(msg.uid).then(answer)
     }
     // Expect async answer
     return true

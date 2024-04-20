@@ -43,3 +43,8 @@ ul {
   /* color: var(--highlight); */
   opacity: 0.6;
 }
+
+.sub-del {
+  padding-inline: 4px;
+  margin: 3px;
+}

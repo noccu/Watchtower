@@ -32,6 +32,17 @@ function fetchNewList(ev) {
     }).then(uiAddList)
 }
 
+/** @param {MouseEvent} ev */
+function deleteList(ev) {
+    if (!ev.target.uid) return
+    chrome.runtime.sendMessage({
+        action: "del-list",
+        uid: ev.target.uid
+    }).then(isDeleted => {
+        if (isDeleted) ev.target.parentElement.remove()
+    })
+}
+
 /** @param {List} data */
 function uiAddList(data) {
     DBG_LAST_LIST_DL = data //!dbg
@@ -39,6 +50,7 @@ function uiAddList(data) {
     t_sub.querySelector(".sub-name").textContent = data.name
     t_sub.querySelector(".sub-url").href = data.homepage
     t_sub.querySelector(".sub-num").textContent = data.size
+    t_sub.querySelector(".sub-del").uid = data.source
     getId("subList").append(t_sub)
     TOTAL_SUBS += 1
     getId("subLen").textContent = TOTAL_SUBS
@@ -59,6 +71,7 @@ function getId(id) {
 
 // UI User actions
 function onOptionsOpened() {
+    getId("subscriptions").addEventListener("click", deleteList)
     getId("newList").addEventListener("keyup", fetchNewList)
     getId("save").addEventListener('click', saveOptions)
     // document.addEventListener('DOMContentLoaded', () => chrome.storage.local.get(CONFIG_DEFAULT, loadOptions))

@@ -28,7 +28,7 @@ interface List {
     color: string
     /** The main/support page of the list. */
     homepage: string
-    /** Download/update URL of the list. */
+    /** Download/update URL of the list. Also used as UID*/
     source: string
     /** Users on the list, split by platform (key). */
     users: Object.<string, User[]>
