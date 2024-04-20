@@ -9,32 +9,26 @@ LABEL.className = "profile-label"
 const MESSAGE = document.createElement("div")
 MESSAGE.className = "profile-mark-msg"
 
-function captureXhr() {
-    let old = window.XMLHttpRequest.prototype.open;
-    window.XMLHttpRequest.prototype.open = function () {
-        let m = arguments[1].match(PATTERN)
-        if (m) {
-            this._reqType = m[1]
-            this.addEventListener("load", parseResponse);
-        }
-        return old.apply(this, arguments);
-    };
-}
 
-function parseResponse() {
-    let resp = JSON.parse(this.responseText)
+/** @param {CustomEvent} ev */
+async function parseResponse(ev) {
+    let m = ev.detail.url.match(PATTERN)
+    if (!m) return
+
+    let reqType = m[1]
+    let resp = JSON.parse(ev.detail.data)
     // UserByScreenName
-    if (this._reqType.endsWith("e")) {
+    if (reqType.endsWith("e")) {
         if (resp.data.user.result.rest_id.endsWith("2")) {
             markProfile()
         }
     }
     // UserTweets
-    else if (this._reqType.endsWith("s")) {
+    else if (reqType.endsWith("s")) {
         //todo: go through tweets to mark or hide them
 
     }
-    console.log(`Response for: ${this._reqType}`);
+    console.log(`Response for: ${reqType}`);
     console.log(`Response Body: ${resp}`);
     
 }
@@ -46,5 +40,9 @@ function markProfile() {
     .append(msgCopy)
 }
 
+function onLoad() {
+    globalThis.addEventListener("wt-xhr", parseResponse)
+}
+
 console.log("actually running")
-captureXhr()
+//captureXhr()
