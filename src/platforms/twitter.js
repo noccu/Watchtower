@@ -9,27 +9,40 @@ LABEL.className = "profile-label"
 const MESSAGE = document.createElement("div")
 MESSAGE.className = "profile-mark-msg"
 
+class RequestType {
+    constructor(endpoint) {
+        this.endpoint = endpoint
+    }
+    // UserByScreenName -> Profile page only (does not fire on hover)
+    isProfile() {
+        return this.endpoint.endsWith("e") ? true : false
+    }
+    // UserTweets
+    isTweetList() {
+        return this.endpoint.endsWith("s") ? true : false
+    }
+}
+
 
 /** @param {CustomEvent} ev */
 async function parseResponse(ev) {
     let m = ev.detail.url.match(PATTERN)
     if (!m) return
 
-    let reqType = m[1]
+    let reqType = new RequestType(m[1])
     let resp = JSON.parse(ev.detail.data)
-    // UserByScreenName
-    if (reqType.endsWith("e")) {
+    //? Set a global state?
+    if (reqType.isProfile()) {
         if (resp.data.user.result.rest_id.endsWith("2")) {
             markProfile()
         }
     }
-    // UserTweets
-    else if (reqType.endsWith("s")) {
+    else if (reqType.isTweetList()) {
         //todo: go through tweets to mark or hide them
 
     }
-    console.log(`Response for: ${reqType}`);
-    console.log(`Response Body: ${resp}`);
+    console.debug(`Response for: ${reqType}`)
+    console.debug(`Response Body: ${resp}`)
     
 }
 
