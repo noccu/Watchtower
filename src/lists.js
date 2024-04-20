@@ -23,6 +23,7 @@ export async function loadLists(lists) {
     // Index users for lookup
     for (let list of LISTS) {
         loadSingleList(list)
+        delete list.users
     }
 }
 
@@ -57,6 +58,7 @@ function indexUsers(list, plat, userList) {
     }
 }
 
+/** @returns {CachedUser | undefined} */
 export function lookupUser(plat, userMainKey) {
     return USERS[plat][userMainKey]
 }

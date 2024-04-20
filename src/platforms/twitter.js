@@ -1,9 +1,6 @@
 const PATTERN = new RegExp("/(UserByScreenName|UserTweets)\\?")
 
-var BAD_LABEL = "Test"
-var BAD_DESC = "This user is a test subject"
-
-
+// Markers
 const LABEL = document.createElement("span")
 LABEL.className = "profile-label"
 const MESSAGE = document.createElement("div")
@@ -33,29 +30,38 @@ async function parseResponse(ev) {
     let resp = JSON.parse(ev.detail.data)
     //? Set a global state?
     if (reqType.isProfile()) {
-        if (resp.data.user.result.rest_id.endsWith("2")) {
-            markProfile()
-        }
+        checkProfile(resp.data.user.result.rest_id)
     }
     else if (reqType.isTweetList()) {
         //todo: go through tweets to mark or hide them
-
     }
-    console.debug(`Response for: ${reqType}`)
-    console.debug(`Response Body: ${resp}`)
-    
+    console.debug(`Response for: ${reqType.endpoint}`)
+    // console.debug(`Response Body: ${resp}`)
 }
 
-function markProfile() {
-    msgCopy = MESSAGE.cloneNode()
-    msgCopy.textContent = `${BAD_LABEL}\n${BAD_DESC}`
-    document.querySelector("[data-testid='UserName']")
-    .append(msgCopy)
+function checkProfile(userId) {
+    chrome.runtime.sendMessage({
+        action: "check-user",
+        platform: "twitter",
+        id: userId
+    }).then(markProfile)
+}
+
+/** @param {CachedUser} user */
+function markProfile(user) {
+    if (!user) return // Not on a list
+    for (let list of user.onLists) {
+        /** @type {HTMLDivElement} */
+        let msgCopy = MESSAGE.cloneNode()
+        msgCopy.textContent = `${list.label}\n${list.msg}`
+        msgCopy.style.backgroundColor = list.color
+        document.querySelector("[data-testid='UserName']").append(msgCopy)
+    }
 }
 
 function onLoad() {
     globalThis.addEventListener("wt-xhr", parseResponse)
 }
 
-console.log("actually running")
-//captureXhr()
+onLoad()
+console.log(`${chrome.runtime.getManifest().name} loaded.`)
