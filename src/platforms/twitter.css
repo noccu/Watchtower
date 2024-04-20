@@ -1,19 +1,19 @@
 :root {
-    --mark-color: rgba(203, 27, 27, 0.769);
+    --default-mark-color: rgba(203, 27, 27, 0.769);
 }
 
 .profile-label {
-    background-color: var(--mark-color) !important;
+    background-color: var(--default-mark-color);
     margin: 0 0.5em;
     font-family: system-ui;
 }
 
 .profile-mark {
-    background-color: var(--mark-color) !important;
+    background-color: var(--default-mark-color);
 }
 
 .profile-mark-msg {
     padding: 0.5em;
     white-space: pre-wrap;
-    background-color: var(--mark-color);
+    background-color: var(--default-mark-color);
 }
