@@ -67,23 +67,28 @@ export function getPlatformList(plat) {
     return USERS[plat]
 }
 
-/** Adds a list to the saved lists in local storage.
- * @param {List} listData The JSON data of a list.
+/** Downloads a list and adds it to extension storage.
+ * @param {string} url The URL to a list.
  * @returns {List} The list data/JSON that was given in, for chaining.
  */
-async function saveNewList(listData) {
+export async function saveNewList(url) {
+    let data = await downLoadList(url)
+    // Add some local data
+    data.source = url
+    data.size = Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+
     let savedLists = await retrieveLists()
-    savedLists.push(listData)
+    savedLists.push(data)
     chrome.storage.local.set({"lists": savedLists})
-    return listData
+
+    loadSingleList(data)
+    return data
 }
 
 /** Downloads the given URL and adds it as a list.
  * @param {str} url
 */
-export async function downLoadList(url) {
-    console.debug("list.js", USERS) //! dbg
-
+async function downLoadList(url) {
     console.log(`Fetching new list: ${url}`)
     /** @type {List} */
     let data = await fetch(url).then(
@@ -98,11 +103,5 @@ export async function downLoadList(url) {
     )
     // The above should throw out of the function if a problem occurs.
     console.log("List fetched")
-    // Add some local data
-    data.source = url
-    data.size = Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
-    // Save list
-    //? Could this cause data loss/corruption? Especially in loops.
-    saveNewList(data).then(loadSingleList)
     return data
 }

@@ -27,7 +27,7 @@ function fetchNewList(ev) {
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
     // ev.preventDefault()
     chrome.runtime.sendMessage({
-        action: "dl-list",
+        action: "add-list",
         url: ev.target.value
     }).then(uiAddList)
 }
