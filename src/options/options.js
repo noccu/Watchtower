@@ -35,11 +35,11 @@ function fetchNewList(ev) {
 /** @param {List} data */
 function uiAddList(data) {
     DBG_LAST_LIST_DL = data //!dbg
-    let t_sub = getId("t_sub")
-    t_sub.content.querySelector(".sub-name").textContent = data.name
-    t_sub.content.querySelector(".sub-url").href = data.homepage
-    t_sub.content.querySelector(".sub-num").textContent = data.size
-    getId("subList").append(t_sub.content.cloneNode(true))
+    let t_sub = getId("t_sub").content.cloneNode(true)
+    t_sub.querySelector(".sub-name").textContent = data.name
+    t_sub.querySelector(".sub-url").href = data.homepage
+    t_sub.querySelector(".sub-num").textContent = data.size
+    getId("subList").append(t_sub)
     TOTAL_SUBS += 1
     getId("subLen").textContent = TOTAL_SUBS
 }
