@@ -1,5 +1,4 @@
 //todo: perhaps use messaging?
-import {downLoadList} from "../lists.js"
 import {CONFIG_DEFAULT} from "../constants.js"
 var DBG_LAST_LIST_DL
 var TOTAL_SUBS = 0
@@ -7,7 +6,7 @@ var TOTAL_SUBS = 0
 
 export async function loadOptions() {
     let savedCfg = await chrome.storage.local.get(CONFIG_DEFAULT)
-    console.debug(savedCfg)
+    console.debug("Config loaded:", savedCfg)
     return savedCfg
     // savedCfg.lists.forEach(uiAddList);
 };
@@ -27,7 +26,10 @@ export function saveOptions (cfg) {
 function fetchNewList(ev) {
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
     // ev.preventDefault()
-    downLoadList(ev.target.value).then(uiAddList)
+    chrome.runtime.sendMessage({
+        action: "dl-list",
+        url: ev.target.value
+    }).then(uiAddList)
 }
 
 /** @param {List} data */

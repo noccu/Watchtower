@@ -78,7 +78,9 @@ async function saveNewList(listData) {
     return listData
 }
 
-/** Downloads the given URL and adds it as a list. */
+/** Downloads the given URL and adds it as a list.
+ * @param {str} url
+*/
 export async function downLoadList(url) {
     console.debug("list.js", USERS) //! dbg
 
