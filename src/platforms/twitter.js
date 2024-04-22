@@ -30,7 +30,7 @@ async function parseResponse(ev) {
     let resp = JSON.parse(ev.detail.data)
     //? Set a global state?
     if (reqType.isProfile()) {
-        checkProfile(resp.data.user.result.rest_id)
+        checkUser(resp.data.user.result.rest_id).then(markProfile)
     }
     else if (reqType.isTweetList()) {
         //todo: go through tweets to mark or hide them
@@ -39,12 +39,12 @@ async function parseResponse(ev) {
     // console.debug(`Response Body: ${resp}`)
 }
 
-function checkProfile(userId) {
-    chrome.runtime.sendMessage({
+function checkUser(userId) {
+    return chrome.runtime.sendMessage({
         action: "check-user",
         platform: "twitter",
         id: userId
-    }).then(markProfile)
+    })
 }
 
 /** @param {CachedUser} onLists */
