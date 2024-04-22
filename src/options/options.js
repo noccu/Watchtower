@@ -17,7 +17,10 @@ function deleteList(ev) {
         action: "del-list",
         uid: ev.target.uid
     }).then(isDeleted => {
-        if (isDeleted) ev.target.parentElement.remove()
+        if (!isDeleted) return
+        ev.target.parentElement.remove()
+        TOTAL_SUBS -= 1
+        getId("subLen").textContent = TOTAL_SUBS
     })
 }
 
