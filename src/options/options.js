@@ -7,7 +7,11 @@ function fetchNewList(ev) {
     chrome.runtime.sendMessage({
         action: "add-list",
         url: ev.target.value
-    }).then(uiAddList)
+    }).then(data => {
+        if (!data) return
+        uiAddList(data)
+        ev.target.value = ""
+    })
 }
 
 /** @param {MouseEvent} ev */
