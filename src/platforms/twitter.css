@@ -1,5 +1,5 @@
 :root {
-    --default-mark-color: rgba(203, 27, 27, 0.769);
+    --default-mark-color: rgba(203, 27, 27, 0.75);
 }
 
 .profile-label {
@@ -16,4 +16,5 @@
     padding: 0.5em;
     white-space: pre-wrap;
     background-color: var(--default-mark-color);
+    font-family: system-ui;
 }
