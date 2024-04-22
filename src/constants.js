@@ -6,6 +6,8 @@ export const PLATFORMS = {
 }
 
 // The extension's default options
+/** @type {Config} */
 export const CONFIG_DEFAULT = {
+    settings: {},
     lists: []
 }

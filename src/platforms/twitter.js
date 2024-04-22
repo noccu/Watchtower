@@ -47,10 +47,10 @@ function checkProfile(userId) {
     }).then(markProfile)
 }
 
-/** @param {CachedUser} user */
-function markProfile(user) {
-    if (!user) return // Not on a list
-    for (let list of user.onLists) {
+/** @param {CachedUser} onLists */
+function markProfile(onLists) {
+    if (!onLists) return // Not on a list
+    for (let list of onLists) {
         /** @type {HTMLDivElement} */
         let msgCopy = MESSAGE.cloneNode()
         msgCopy.textContent = `${list.label}\n${list.msg}`

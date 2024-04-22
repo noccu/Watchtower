@@ -1,25 +1,16 @@
+import { markConfigChanged } from "./config.js"
 import {PLATFORMS} from "./constants.js"
 
-/** Stores loaded lists
+/** Quick pointer to loaded lists
  * @type {List[]} */
 var LISTS
 /** Stores user index */
 const USERS = {}
-//todo: Only load lists when activated from content script?
 
 
-/** Simple util function to only get lists, fallback to a default, and log errors
- * @returns {Promise<List[]>}
-*/
-function retrieveLists() {
-    return chrome.storage.local.get({"lists": []}).then(data => data.lists, console.error)
-}
-
-/** Load lists from storage
- *  @param {List[]} [lists] An array of lists to load. Falls back to stored lists if undefined
- */
+/** Initializes stored lists for use */
 export async function loadLists(lists) {
-    LISTS = lists || await retrieveLists()
+    LISTS = lists
     // Set up the per-platform cache
     for (let plat in PLATFORMS) {
         USERS[plat] = {}
@@ -27,12 +18,12 @@ export async function loadLists(lists) {
     // Index users for lookup
     for (let list of LISTS) {
         loadSingleList(list)
-        delete list.users
+        // delete list.users
     }
 }
 
 /** @param {List} listData */
-async function loadSingleList(listData) {
+function loadSingleList(listData) {
     for (let [plat, userList] of Object.entries(listData.users)) {
         indexUsers(listData, plat, userList)
     }
@@ -48,23 +39,28 @@ function indexUsers(list, plat, userList) {
     let mainKey = PLATFORMS[plat]
     for (let user of userList) {
         let userKey = user[mainKey]
-        // Swap in existing if found, effectively shadowing dupe user entries.
-        user = USERS[plat][userKey] || user
-        // Already indexed, update/combine lists.
-        if (user.onLists) {
-            user.onLists.push(list)
-            // Could delete dupes to save a bit of ram I guess?
+        // Link user to list.
+        let onLists = USERS[plat][userKey]
+        if (onLists) {
+            onLists.push(list)
             continue
         }
-        // Add to index
-        user.onLists = [list]
-        USERS[plat][userKey] = user
+        USERS[plat][userKey] = [list]
     }
 }
 
-/** @returns {CachedUser | undefined} */
+/** @returns {ListMarkers | undefined} */
 export function lookupUser(plat, userMainKey) {
-    return USERS[plat][userMainKey]
+    /** @type {List[]} */
+    let onLists = USERS[plat][userMainKey]
+    if (!onLists) return
+    return onLists.map(list => {
+        return {
+            label: list.label,
+            msg: list.msg,
+            color: list.color
+        }
+    })
 }
 
 export function getPlatformList(plat) {
@@ -77,7 +73,6 @@ function getListBySource(src) {
 
 /** Downloads a list and adds it to extension storage.
  * @param {string} url The URL to a list.
- * @returns {List} The list data/JSON that was given in, for chaining.
  */
 export async function saveNewList(url) {
     //todo: check if already saved
@@ -87,10 +82,8 @@ export async function saveNewList(url) {
     data.source = url
     data.size = Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
 
-    let savedLists = await retrieveLists()
-    savedLists.push(data)
-    chrome.storage.local.set({"lists": savedLists})
-
+    LISTS.push(data)
+    markConfigChanged()
     loadSingleList(data)
     return data
 }
@@ -106,20 +99,18 @@ export async function deleteList(src) {
 
     LISTS.splice(LISTS.indexOf(listRef), 1)
     for (let plat in USERS) {
-        Object.values(USERS[plat]).forEach(user => {
-            user.onLists.splice(user.onLists.indexOf(listRef), 1)
+        Object.values(USERS[plat]).forEach(onList => {
+            onList.splice(onList.indexOf(listRef), 1)
         })
     }
 
-    let savedLists = await retrieveLists()
-    savedLists.splice(savedLists.findIndex(sl => sl.source = listRef.source), 1)
-    chrome.storage.local.set({"lists": savedLists})
-
+    markConfigChanged()
+    // chrome.storage.local.set({"lists": LISTS})
     console.debug("Deleted list:", listRef.name)
     return true
 }
 
-/** Downloads the given URL and adds it as a list.
+/** Downloads the given URL.
  * @param {str} url
 */
 async function downLoadList(url) {

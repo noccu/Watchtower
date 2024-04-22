@@ -1,26 +1,4 @@
-//todo: perhaps use messaging?
-import {CONFIG_DEFAULT} from "../constants.js"
-var DBG_LAST_LIST_DL
 var TOTAL_SUBS = 0
-
-
-export async function loadOptions() {
-    let savedCfg = await chrome.storage.local.get(CONFIG_DEFAULT)
-    console.debug("Config loaded:", savedCfg)
-    return savedCfg
-    // savedCfg.lists.forEach(uiAddList);
-};
-
-export function saveOptions (cfg) {
-    console.log("Saving config")
-    // fullCfg = structuredClone(CONFIG_DEFAULT)
-    // Object.assign(fullCfg, cfg)
-    chrome.storage.local.set(cfg);
-    //todo: send update event
-    console.log("Config saved")
-    setStatus("Config saved")
-  };
-
 
 // UI background
 function fetchNewList(ev) {
@@ -45,7 +23,6 @@ function deleteList(ev) {
 
 /** @param {List} data */
 function uiAddList(data) {
-    DBG_LAST_LIST_DL = data //!dbg
     let t_sub = getId("t_sub").content.cloneNode(true)
     t_sub.querySelector(".sub-name").textContent = data.name
     t_sub.querySelector(".sub-url").href = data.homepage
@@ -56,11 +33,8 @@ function uiAddList(data) {
     getId("subLen").textContent = TOTAL_SUBS
 }
 
-//todo: improve error display in UI
-function setStatus(msg) {
-    let status = getId("status")
-    status.textContent = msg
-    setTimeout(() => status.textContent = "", 1500)
+function saveCfg() {
+    chrome.runtime.sendMessage("save-cfg")
 }
 
 // -> <-
@@ -73,9 +47,13 @@ function getId(id) {
 function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", deleteList)
     getId("newList").addEventListener("keyup", fetchNewList)
-    getId("save").addEventListener('click', saveOptions)
-    // document.addEventListener('DOMContentLoaded', () => chrome.storage.local.get(CONFIG_DEFAULT, loadOptions))
-    loadOptions().then(cfg => cfg.lists.forEach(uiAddList))
+    // getId("save").addEventListener('click', saveOptions)
+    chrome.runtime.sendMessage("get-cfg").then(cfg => {
+        //todo: move to actual func to set up complex ui/options
+        cfg.lists.forEach(uiAddList)
+    })
+    window.addEventListener("blur", saveCfg)
 }
 
+// Called from options page
 if (globalThis.document) onOptionsOpened()
