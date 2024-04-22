@@ -9,6 +9,11 @@ function fetchNewList(ev) {
         url: ev.target.value
     }).then(data => {
         if (!data) return
+        // Really dislike JS type handling
+        if (typeof data == "string") {
+            ev.target.value = data
+            return
+        }
         uiAddList(data)
         ev.target.value = ""
     })

@@ -75,8 +75,12 @@ function getListBySource(src) {
  * @param {string} url The URL to a list.
  */
 export async function saveNewList(url) {
-    //todo: check if already saved
-    console.debug("Add new list requested")
+    console.debug("Add new list requested.")
+    let l = getListBySource(url)
+    if (l) {
+        console.debug(`List already added: "${l.name}" from ${l.source}`)
+        return "List already exists"
+    }
     let data = await downLoadList(url)
     // Add some local data
     data.source = url
