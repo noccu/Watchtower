@@ -58,7 +58,7 @@ function getId(id) {
 // UI User actions
 function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", deleteList)
-    getId("newList").addEventListener("keyup", fetchNewList)
+    getId("new-list").addEventListener("keyup", fetchNewList)
     // getId("save").addEventListener('click', saveOptions)
     chrome.runtime.sendMessage("get-cfg").then(cfg => {
         //todo: move to actual func to set up complex ui/options

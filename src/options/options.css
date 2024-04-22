@@ -21,6 +21,10 @@ ul {
   padding-inline-start: 20px;
 }
 
+#new-list {
+  width: min(40em, 500%);
+}
+
 .sub {
   display: block;
 }
