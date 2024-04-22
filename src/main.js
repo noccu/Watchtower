@@ -2,8 +2,16 @@ import { loadConfig, saveConfig } from "./config.js"
 import { loadLists, lookupUser, getPlatformList, saveNewList, deleteList } from "./lists.js"
 
 // Messaging
+//todo: Use promises/async once Chrome supports it for extension messaging.
+//todo: alternatively, just use a basic keep-alive.
 chrome.runtime.onMessage.addListener((msg, sender, answer) => {
     console.debug("Received:", msg)
+    READY.then(() => respond(msg, answer))
+    // Expect async answer
+    return true
+})
+
+function respond(msg, answer) {
     if (msg.action == "get-list") {
         answer(getPlatformList(msg.platform))
     }
@@ -23,10 +31,7 @@ chrome.runtime.onMessage.addListener((msg, sender, answer) => {
     else if (msg == "save-cfg") {
         answer(saveConfig())
     }
-    // Expect async answer
-    return true
-})
-
+}
 
 // Management
-loadConfig().then(cfg => loadLists(cfg.lists))
+const READY = loadConfig().then(cfg => loadLists(cfg.lists))
