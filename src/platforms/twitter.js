@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(UserByScreenName|UserTweets|CommunityTweetsTimeline)\\?")
+const PATTERN = new RegExp("/(UserByScreenName|UserTweets|CommunityTweetsTimeline|TweetDetail)\\?")
 
 // Markers
 const LABEL = document.createElement("span")
@@ -26,6 +26,10 @@ class RequestType {
     isCommunity() {
         return this.endpoint.startsWith("C") ? true : false
     }
+    // Tweet detail/status
+    isTweetDetail() {
+        return this.endpoint.endsWith("l") ? true : false
+    }
 }
 
 
@@ -46,6 +50,9 @@ async function parseResponse(ev) {
     }
     else if (reqType.isCommunity()) {
         mapUsers(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
+    }
+    else if (reqType.isTweetDetail()) {
+        mapUsers(resp.data.threaded_conversation_with_injections_v2.instructions)
     }
     console.debug(`Response for: ${reqType.endpoint}`)
     // console.debug(`Response Body: ${resp}`)
@@ -92,12 +99,25 @@ function mapUsers(instructions) {
     for (let inst of instructions) {
         if (inst.type != "TimelineAddEntries") continue
         for (let entry of inst.entries) {
-            if (entry.content.itemContent?.itemType != "TimelineTweet") continue
-            let tweetData = entry.content.itemContent.tweet_results.result
-            mapFromTweetData(tweetData)
+            let content = entry.content
+            // Most things
+            if (content.entryType.endsWith("Item")) {
+                handleItem(content)
+            }
+            // TweetDetail (/status/)
+            else if (content.entryType.endsWith("Module")) {
+                for (let moduleEntry of content.items) {
+                    handleItem(moduleEntry.item)
+                }
+            }
         }
     }
     console.debug("New map:", USER_MAP)
+}
+
+function handleItem(item) {
+    if (item.itemContent?.itemType != "TimelineTweet") return
+    mapFromTweetData(item.itemContent.tweet_results.result)
 }
 
 /** Extracts info from tweet data to create user map */
