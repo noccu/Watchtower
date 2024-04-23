@@ -131,10 +131,21 @@ function trackUsers() {
 }
 
 function checkTweets() {
+    //? Maybe try to link the tweet's rest_id from API?
     for (let userEl of USERNAME_ELEMENTS) {
         if (userEl.wtChecked) continue
         if (!userEl.dataset.testid?.startsWith("U")) continue
-        let username = userEl.getElementsByTagName("a")[1].textContent.slice(1)
+        // Quote tweets and maybe others do not have links on name.
+        // Name span can be split by <img> when name has emotes.
+        let nameEl = Array.prototype.find.call(
+            userEl.getElementsByTagName("span"),
+            el => el.textContent.startsWith("@")
+        )
+        if (!nameEl) {
+            console.debug("Couldn't find name element:", userEl)
+            return
+        }
+        let username = nameEl.textContent.slice(1)
         let userId = USER_MAP[username]
         if (!userId) {
             console.debug("Missing user ID:", username, userEl)
