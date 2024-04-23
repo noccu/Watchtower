@@ -80,7 +80,7 @@ function markTweet(userEl, onLists) {
     }
 }
 
-/** Extracts info from API instructions */
+/** Process API instructions to map Username -> ID */
 function mapUsers(instructions) {
     for (let inst of instructions) {
         if (inst.type != "TimelineAddEntries") continue
@@ -93,7 +93,7 @@ function mapUsers(instructions) {
     console.debug("New map:", USER_MAP)
 }
 
-/** Extracts info from tweet data */
+/** Extracts info from tweet data to create user map */
 function mapFromTweetData(data){
     // Oh very fun, twitter. APIs should be consistent!
     data = data.tweet || data
@@ -108,23 +108,22 @@ function mapFromTweetData(data){
     }
 }
 
-/** @param {MutationRecord[]} recordList */
+/**
+ * @param {MutationRecord[]} recordList
+ * @param {MutationObserver} obs
+ */
 function checkChanges(recordList, obs) {
     for (let record of recordList) {
-        // if (record.addedNodes.length == 0) continue
-        // if (record.addedNodes.length != 0) console.debug("Record target:", record.target)
-        if (record.target.childNodes[0]?.dataset?.testid != "cellInnerDiv") continue
-        for (let node of record.addedNodes) {
-            // if (node.nodeType != Node.ELEMENT_NODE) continue
-            console.debug("Added node:", node, node.textContent)
-            if (USERNAME_ELEMENTS === undefined && !trackUsers()) return
-            checkTweets()
-            return
-        }
+        if (!record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) continue
+        if (!trackUsers()) return
+        obs.takeRecords()
+        checkTweets()
+        return
     }
 }
 
 function trackUsers() {
+    if (USERNAME_ELEMENTS !== undefined) return true
     let userEle = document.querySelector("[data-testid='User-Name']")
     if (!userEle) return false
     USERNAME_ELEMENTS = document.getElementsByClassName(userEle.className)
@@ -138,7 +137,7 @@ function checkTweets() {
         let username = userEl.getElementsByTagName("a")[1].textContent.slice(1)
         let userId = USER_MAP[username]
         if (!userId) {
-            console.debug("Missing user ID:", username)
+            console.debug("Missing user ID:", username, userEl)
             continue
         }
         checkUser(userId).then(listMetas => markTweet(userEl, listMetas))
