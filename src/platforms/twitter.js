@@ -80,22 +80,32 @@ function markTweet(userEl, onLists) {
     }
 }
 
-/** Extracts the info we want from twitter instructions */
+/** Extracts info from API instructions */
 function mapUsers(instructions) {
     for (let inst of instructions) {
         if (inst.type != "TimelineAddEntries") continue
         for (let entry of inst.entries) {
             if (entry.content.itemContent?.itemType != "TimelineTweet") continue
-            entry = entry.content.itemContent
-            // let tweetId = entry.tweet_results.result.rest_id
-            let user = entry.tweet_results.result.core.user_results.result
-            let userId = user.rest_id
-            let userHandle = user.legacy.screen_name
-            //todo: extract retweets
-            USER_MAP[userHandle] = userId
+            let tweetData = entry.content.itemContent.tweet_results.result
+            mapFromTweetData(tweetData)
         }
     }
     console.debug("New map:", USER_MAP)
+}
+
+/** Extracts info from tweet data */
+function mapFromTweetData(data){
+    // Oh very fun, twitter. APIs should be consistent!
+    data = data.tweet || data
+    // let tweetId = data.rest_id
+    let user = data.core.user_results.result
+    let userId = user.rest_id
+    let userHandle = user.legacy.screen_name
+    USER_MAP[userHandle] = userId
+    let retweetData = data.legacy.retweeted_status_result?.result
+    if (retweetData) {
+        mapFromTweetData(retweetData)
+    }
 }
 
 /** @param {MutationRecord[]} recordList */
