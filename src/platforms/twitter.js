@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(UserByScreenName|UserTweets)\\?")
+const PATTERN = new RegExp("/(UserByScreenName|UserTweets|CommunityTweetsTimeline)\\?")
 
 // Markers
 const LABEL = document.createElement("span")
@@ -16,11 +16,15 @@ class RequestType {
     }
     // UserByScreenName -> Profile page only (does not fire on hover)
     isProfile() {
-        return this.endpoint.endsWith("e") ? true : false
+        return this.endpoint.endsWith("me") ? true : false
     }
     // UserTweets
     isTweetList() {
         return this.endpoint.endsWith("s") ? true : false
+    }
+    // Community TL
+    isCommunity() {
+        return this.endpoint.startsWith("C") ? true : false
     }
 }
 
@@ -39,6 +43,9 @@ async function parseResponse(ev) {
     }
     else if (reqType.isTweetList()) {
         mapUsers(resp.data.user.result.timeline_v2.timeline.instructions)
+    }
+    else if (reqType.isCommunity()) {
+        mapUsers(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
     }
     console.debug(`Response for: ${reqType.endpoint}`)
     // console.debug(`Response Body: ${resp}`)
