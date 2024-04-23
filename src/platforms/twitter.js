@@ -135,7 +135,7 @@ function checkTweets() {
     for (let userEl of USERNAME_ELEMENTS) {
         if (userEl.wtChecked) continue
         if (!userEl.dataset.testid?.startsWith("U")) continue
-        let username = userEl.getElementsByTagName("span")[3].textContent.slice(1)
+        let username = userEl.getElementsByTagName("a")[1].textContent.slice(1)
         let userId = USER_MAP[username]
         if (!userId) {
             console.debug("Missing user ID:", username)
