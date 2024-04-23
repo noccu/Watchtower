@@ -129,9 +129,9 @@ function mapFromTweetData(data){
     let userId = user.rest_id
     let userHandle = user.legacy.screen_name
     USER_MAP[userHandle] = userId
-    let retweetData = data.legacy.retweeted_status_result?.result
-    if (retweetData) {
-        mapFromTweetData(retweetData)
+    let secondaryTweetData = data.legacy.retweeted_status_result || data.quoted_status_result
+    if (secondaryTweetData) {
+        mapFromTweetData(secondaryTweetData.result)
     }
 }
 
