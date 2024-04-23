@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(UserByScreenName|UserTweets|CommunityTweetsTimeline|TweetDetail)\\?")
+const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunityTweetsTimeline|TweetDetail)(?:\\?|$)")
 
 // Markers
 const LABEL = document.createElement("span")
@@ -30,6 +30,10 @@ class RequestType {
     isTweetDetail() {
         return this.endpoint.endsWith("l") ? true : false
     }
+    // Home timeline
+    isHome() {
+        return this.endpoint.startsWith("H") ? true : false
+    }
 }
 
 
@@ -53,6 +57,9 @@ async function parseResponse(ev) {
     }
     else if (reqType.isTweetDetail()) {
         mapUsers(resp.data.threaded_conversation_with_injections_v2.instructions)
+    }
+    else if (reqType.isHome()) {
+        mapUsers(resp.data.home.home_timeline_urt.instructions)
     }
     console.debug(`Response for: ${reqType.endpoint}`)
     // console.debug(`Response Body: ${resp}`)
