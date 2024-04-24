@@ -46,7 +46,7 @@ function uiAddList(data) {
 }
 
 function saveCfg() {
-    chrome.runtime.sendMessage("save-cfg")
+    chrome.runtime.sendMessage({action: "save-cfg"})
 }
 
 // -> <-
@@ -60,7 +60,7 @@ function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", deleteList)
     getId("new-list").addEventListener("keyup", fetchNewList)
     // getId("save").addEventListener('click', saveOptions)
-    chrome.runtime.sendMessage("get-cfg").then(cfg => {
+    chrome.runtime.sendMessage({action: "get-cfg"}).then(cfg => {
         //todo: move to actual func to set up complex ui/options
         cfg.lists.forEach(uiAddList)
     })

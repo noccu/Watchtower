@@ -5,7 +5,7 @@ var CUR_REPORT
 
 async function loadReportableLists() {
     /** @type {List[]} */
-    let lists = await chrome.runtime.sendMessage("get-report-lists")
+    let lists = await chrome.runtime.sendMessage({action: "get-report-lists"})
     for (let list of lists) {
         let option = document.createElement("option")
         option.text = list.name
@@ -38,7 +38,7 @@ function onLoad() {
     loadReportableLists()
     document.getElementById("report").addEventListener("click", report)
     chrome.runtime.onMessage.addListener(swListener)
-    chrome.runtime.sendMessage("report-page-loaded")
+    chrome.runtime.sendMessage({action: "report-page-loaded"})
 }
 
 document.addEventListener("DOMContentLoaded", onLoad)

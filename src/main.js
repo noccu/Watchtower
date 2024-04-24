@@ -14,31 +14,33 @@ chrome.runtime.onMessage.addListener((msg, sender, answer) => {
 })
 
 function respond(msg, answer) {
-    if (msg.action == "get-list") {
-        answer(getPlatformList(msg.platform))
-    }
-    else if (msg.action == "check-user") {
-        console.debug("User lookup requested:", msg.platform, msg.id) //! dbg
-        answer(lookupUser(msg.platform, msg.id))
-    }
-    else if (msg.action == "add-list") {
-        saveNewList(msg.url).then(answer)
-    }
-    else if (msg.action == "del-list") {
-        deleteList(msg.uid).then(answer)
-    }
-    else if (msg == "get-cfg") {
-        loadConfig().then(answer)
-    }
-    else if (msg == "save-cfg") {
-        answer(saveConfig())
-    }
-    else if (msg == "get-report-lists") {
-        answer(getReportableLists())
-    }
-    // Don't ask
-    else if (msg == "report-page-loaded") {
-        REPORT_PAGE_READY.resolve()
+    switch (msg.action) {
+        case "get-list":
+            answer(getPlatformList(msg.platform))
+            break
+        case "check-user":
+            console.debug("User lookup requested:", msg.platform, msg.id) //! dbg
+            answer(lookupUser(msg.platform, msg.id))
+            break
+        case "add-list":
+            saveNewList(msg.url).then(answer)
+            break
+        case "del-list":
+            deleteList(msg.uid).then(answer)
+            break
+        case "get-cfg":
+            loadConfig().then(answer)
+            break
+        case "save-cfg":
+            answer(saveConfig())
+            break
+        case "get-report-lists":
+            answer(getReportableLists())
+            break
+        // Don't ask
+        case "report-page-loaded":
+            REPORT_PAGE_READY.resolve()
+            break
     }
 }
 
