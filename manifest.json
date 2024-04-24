@@ -7,7 +7,8 @@
    "permissions": [
       "alarms",
       "storage",
-      "unlimitedStorage"
+      "unlimitedStorage",
+      "contextMenus"
    ],
    "background": {
       "service_worker": "src/main.js",
@@ -35,6 +36,7 @@
       }
    ],
    "options_page": "src/options/options.html",
+   "action": {},
    "host_permissions": [
       "file:///"
    ]

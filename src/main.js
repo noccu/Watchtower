@@ -1,5 +1,7 @@
 import { loadConfig, saveConfig } from "./config.js"
-import { loadLists, lookupUser, getPlatformList, saveNewList, deleteList } from "./lists.js"
+import { loadLists, lookupUser, getPlatformList, saveNewList, deleteList, getReportableLists } from "./lists.js"
+import { reportTargets } from "./constants.js"
+import { reportUser, REPORT_PAGE_READY } from "./report.js"
 
 // Messaging
 //todo: Use promises/async once Chrome supports it for extension messaging.
@@ -31,7 +33,22 @@ function respond(msg, answer) {
     else if (msg == "save-cfg") {
         answer(saveConfig())
     }
+    else if (msg == "get-report-lists") {
+        answer(getReportableLists())
+    }
+    // Don't ask
+    else if (msg == "report-page-loaded") {
+        REPORT_PAGE_READY.resolve()
+    }
 }
 
 // Management
 const READY = loadConfig().then(cfg => loadLists(cfg.lists))
+
+chrome.contextMenus.create({
+    id: "wt-report",
+    title: "Watchtower report…",
+    contexts: ["link"],
+    targetUrlPatterns: reportTargets
+})
+chrome.contextMenus.onClicked.addListener(reportUser)

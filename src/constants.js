@@ -5,6 +5,10 @@ export const PLATFORMS = {
     "pixiv": "id"
 }
 
+export const reportTargets = [
+    "https://twitter.com/*"
+]
+
 // The extension's default options
 /** @type {Config} */
 export const CONFIG_DEFAULT = {

@@ -1,4 +1,5 @@
 const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunityTweetsTimeline|TweetDetail)(?:\\?|$)")
+const PLATFORM = "twitter"
 
 // Markers
 const LABEL = document.createElement("span")
@@ -190,8 +191,23 @@ function checkTweets() {
     }
 }
 
+// Reports
+function msgResponder(msg, sender, answer) {
+    console.debug("Received:", msg)
+    if (msg.action == "get-user") {
+        let target = new URL(msg.targetLink)
+        let username = target.pathname.split("/")[1]
+        answer({
+            user: username,
+            id: USER_MAP[username],
+            platform: PLATFORM
+        })
+    }
+}
+
 function onLoad() {
     globalThis.addEventListener("wt-xhr", parseResponse)
+    chrome.runtime.onMessage.addListener(msgResponder)
     window.addEventListener("DOMContentLoaded", e => {
         let tweetObserver = new MutationObserver(checkChanges)
         tweetObserver.observe(

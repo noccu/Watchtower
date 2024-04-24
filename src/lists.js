@@ -63,12 +63,20 @@ export function lookupUser(plat, userMainKey) {
     })
 }
 
+export function getLists() {
+    return LISTS
+}
+
 export function getPlatformList(plat) {
     return USERS[plat]
 }
 
 function getListBySource(src) {
     return LISTS.find(l => l.source == src)
+}
+
+export function getReportableLists() {
+    return LISTS.filter(l => l.reportType)
 }
 
 /** Downloads a list and adds it to extension storage.
