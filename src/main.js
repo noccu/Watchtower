@@ -46,11 +46,17 @@ function respond(msg, answer) {
 
 // Management
 const READY = loadConfig().then(cfg => loadLists(cfg.lists))
-
-chrome.contextMenus.create({
-    id: "wt-report",
-    title: "Watchtower report…",
-    contexts: ["link"],
-    targetUrlPatterns: reportTargets
-})
-chrome.contextMenus.onClicked.addListener(reportUser)
+// Menu creation will fail after wake-up.
+chrome.contextMenus.create(
+    {
+        id: "wt-report",
+        title: "Watchtower report…",
+        contexts: ["link"],
+        targetUrlPatterns: reportTargets
+    },
+    () => {
+        if (!chrome.runtime.lastError) {
+            chrome.contextMenus.onClicked.addListener(reportUser)
+        }
+    }
+)
