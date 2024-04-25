@@ -51,16 +51,16 @@ async function parseResponse(ev) {
         //todo: add user to map?
     }
     else if (reqType.isTweetList()) {
-        mapUsers(resp.data.user.result.timeline_v2.timeline.instructions)
+        handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
     }
     else if (reqType.isCommunity()) {
-        mapUsers(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
+        handleInstructions(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
     }
     else if (reqType.isTweetDetail()) {
-        mapUsers(resp.data.threaded_conversation_with_injections_v2.instructions)
+        handleInstructions(resp.data.threaded_conversation_with_injections_v2.instructions)
     }
     else if (reqType.isHome()) {
-        mapUsers(resp.data.home.home_timeline_urt.instructions)
+        handleInstructions(resp.data.home.home_timeline_urt.instructions)
     }
     console.debug(`Response for: ${reqType.endpoint}`)
     // console.debug(`Response Body: ${resp}`)
@@ -103,8 +103,12 @@ function markTweet(userEl, onLists) {
 }
 
 /** Process API instructions to map Username -> ID */
-function mapUsers(instructions) {
+function handleInstructions(instructions) {
     for (let inst of instructions) {
+        if (inst.type == "TimelinePinEntry") {
+            handleItem(inst.entry.content)
+            continue
+        }
         if (inst.type != "TimelineAddEntries") continue
         for (let entry of inst.entries) {
             let content = entry.content
