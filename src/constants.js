@@ -1,5 +1,6 @@
 export var DBG = true
 // Map supported platforms to main key
+/** @type {PlatformKeyed<string>} */
 export const PLATFORMS = {
     "twitter": "rest_id",
     "pixiv": "id"

@@ -4,7 +4,8 @@ import {PLATFORMS} from "./constants.js"
 /** Quick pointer to loaded lists
  * @type {List[]} */
 var LISTS
-/** Stores user index */
+/** Stores user index
+* @type {PlatformKeyed<Object<string, ListMarkers[]>>}} */
 const USERS = {}
 
 
@@ -49,7 +50,9 @@ function indexUsers(list, plat, userList) {
     }
 }
 
-/** @returns {ListMarkers | undefined} */
+/**
+* @param {PLATFORM} plat 
+* @returns {ListMarkers | undefined} */
 export function lookupUser(plat, userMainKey) {
     /** @type {List[]} */
     let onLists = USERS[plat][userMainKey]
@@ -67,6 +70,7 @@ export function getLists() {
     return LISTS
 }
 
+/** @param {PLATFORM} plat */
 export function getPlatformList(plat) {
     return USERS[plat]
 }

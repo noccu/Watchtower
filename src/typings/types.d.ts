@@ -45,6 +45,13 @@ interface List extends ListMarkers {
     users: Object.<string, User[]>
 }
 
+type PLATFORMS = {
+    twitter,
+    pixiv
+}
+type PLATFORM = keyof PLATFORMS
+type PlatformKeyed<T> = {[plat in PLATFORM]: T}
+
 interface Settings {
     //todo
 }
