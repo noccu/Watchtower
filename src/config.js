@@ -32,6 +32,12 @@ export function getConfig(key) {
     return CONFIG[key]
 }
 
+/** @param {keyof Settings} key */
+export function changeSetting(key, value) {
+    CONFIG.settings[key] = value
+    CONFIG_CHANGED = true
+}
+
 //todo: Hmm. Are events any better? Custom classes? List functions? Proxy the config?
 export function markConfigChanged() {
     CONFIG_CHANGED = true
