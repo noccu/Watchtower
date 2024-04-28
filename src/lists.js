@@ -12,9 +12,8 @@ const USERS = {}
 class CachedList {
     /** @param {List} list */
     constructor(list) {
-        let { users, meta, local } = list
-        this.meta = meta
-        this.local = local
+        this.meta = list.meta
+        this.local = list.local
         Object.defineProperty(this, "full", {
             enumerable: false,
             writable: false,
