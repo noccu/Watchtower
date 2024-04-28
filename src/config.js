@@ -1,7 +1,7 @@
 import { CONFIG_DEFAULT } from "./constants.js"
 
 /** @type {Config} */
-export var CONFIG
+var CONFIG
 // We need/like this for the autosave, which can trigger a lot.
 var CONFIG_CHANGED = false
 
@@ -22,7 +22,14 @@ export function saveConfig() {
     console.log("Config saved")
 }
 
-//todo: Hmm. Are events any better? Custom classes? List functions?
+/** @param {keyof Config} key */
+export function getConfig(key) {
+    return CONFIG[key]
+}
+
+//todo: Hmm. Are events any better? Custom classes? List functions? Proxy the config?
 export function markConfigChanged() {
     CONFIG_CHANGED = true
 }
+
+// globalThis.addEventListener("listsChanged", markConfigChanged)

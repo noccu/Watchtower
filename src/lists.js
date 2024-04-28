@@ -1,69 +1,73 @@
-import { markConfigChanged } from "./config.js"
-import {PLATFORMS} from "./constants.js"
+import { getConfig, markConfigChanged } from "./config.js"
+import { PLATFORMS } from "./constants.js"
 
-/** Quick pointer to loaded lists
- * @type {List[]} */
-var LISTS
+/** Pointers to loaded list data, users excluded.
+ * @type {LoadedList[]} */
+const LISTS = []
 /** Stores user index
-* @type {PlatformKeyed<Object<string, ListMarkers[]>>}} */
+* @type {PlatformKeyed<Object<string, LoadedList[]>>}} */
 const USERS = {}
 
+/** Known as LoadedList in docs. */
+class CachedList {
+    /** @param {List} list */
+    constructor(list) {
+        let { users, meta, local } = list
+        this.meta = meta
+        this.local = local
+        Object.defineProperty(this, "full", {
+            enumerable: false,
+            writable: false,
+            value: list
+        })
+    }
+}
 
-/** Initializes stored lists for use */
+
+/** Initializes stored lists for use
+ * @param {List[]} lists
+*/
 export async function loadLists(lists) {
-    LISTS = lists
+    LISTS.length = 0
     // Set up the per-platform cache
-    for (let plat in PLATFORMS) {
+    for (var plat in PLATFORMS) {
         USERS[plat] = {}
     }
-    // Index users for lookup
-    for (let list of LISTS) {
+    for (var list of lists) {
         loadSingleList(list)
-        // delete list.users
     }
 }
 
 /** @param {List} listData */
 function loadSingleList(listData) {
-    for (let [plat, userList] of Object.entries(listData.users)) {
-        indexUsers(listData, plat, userList)
-    }
+    let list = new CachedList(listData)
+    LISTS.push(list)
+    indexUsers(list)
 }
 
-/** Indexes users listed under a platform for quicker lookup.
+/** Indexes users from all platforms for quicker lookup.
  * The index is stored in the global var USERS.
- * @param {List} list
- * @param {string} plat
- * @param {User[]} userList
+ * @param {LoadedList} list
 */
-function indexUsers(list, plat, userList) {
-    let mainKey = PLATFORMS[plat]
-    for (let user of userList) {
-        let userKey = user[mainKey]
-        // Link user to list.
-        let onLists = USERS[plat][userKey]
-        if (onLists) {
-            onLists.push(list)
-            continue
+function indexUsers(list) {
+    for (let [plat, platUsers] of Object.entries(list.full.users)) {
+        const mainKey = PLATFORMS[plat]
+        for (var user of platUsers) {
+            let userKey = user[mainKey]
+            // Link user to list.
+            let onLists = USERS[plat][userKey]
+            if (onLists) {
+                onLists.push(list)
+                continue
+            }
+            USERS[plat][userKey] = [list]
         }
-        USERS[plat][userKey] = [list]
     }
 }
 
-/**
-* @param {PLATFORM} plat 
-* @returns {ListMarkers | undefined} */
+/** @param {PLATFORM} plat */
 export function lookupUser(plat, userMainKey) {
-    /** @type {List[]} */
-    let onLists = USERS[plat][userMainKey]
-    if (!onLists) return
-    return onLists.map(list => {
-        return {
-            label: list.label,
-            msg: list.msg,
-            color: list.color
-        }
-    })
+    return USERS[plat][userMainKey]
 }
 
 export function getLists() {
@@ -76,53 +80,62 @@ export function getPlatformList(plat) {
 }
 
 function getListBySource(src) {
-    return LISTS.find(l => l.source == src)
+    return LISTS.find(l => l.local.source == src)
 }
 
 export function getReportableLists() {
-    return LISTS.filter(l => l.reportType)
+    return LISTS.filter(l => l.meta.reportType)
 }
 
 /** Downloads a list and adds it to extension storage.
  * @param {string} url The URL to a list.
  */
-export async function saveNewList(url) {
+export async function addList(url) {
     console.debug("Add new list requested.")
     let l = getListBySource(url)
     if (l) {
-        console.debug(`List already added: "${l.name}" from ${l.source}`)
+        console.debug(`List already added: "${l.meta.name}" from ${l.local.source}`)
         return "List already exists"
     }
     let data = await downLoadList(url)
     // Add some local data
-    data.source = url
-    data.size = Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+    data.local = {
+        source: url,
+        size: Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+    }
 
-    LISTS.push(data)
+    getConfig("lists").push(data)
     markConfigChanged()
+    // globalThis.dispatchEvent(new CustomEvent("listsChanged", {change: "add", list: data}))
     loadSingleList(data)
+
+    console.debug("List added:", data.meta.name)
     return data
 }
 
 /** Remove a list by source URL/UID */
-export async function deleteList(src) {
+export async function removeList(src) {
     console.debug("Delete list requested:", src)
-    let listRef = getListBySource(src)
-    if (!listRef) {
+    let list = getListBySource(src)
+    if (!list) {
         console.debug("No such list found.")
         return false
     }
 
-    LISTS.splice(LISTS.indexOf(listRef), 1)
-    for (let plat in USERS) {
-        Object.values(USERS[plat]).forEach(onList => {
-            onList.splice(onList.indexOf(listRef), 1)
-        })
+    for (var [plat, platUsers] of Object.entries(list.full.users)) {
+        for (var user of platUsers) {
+            var onList = lookupUser(plat, user.id)
+            onList.splice(onList.indexOf(list), 1)
+        }
     }
 
+    let savedLists = getConfig("lists")
+    savedLists.splice(savedLists.indexOf(list.full), 1)
     markConfigChanged()
-    // chrome.storage.local.set({"lists": LISTS})
-    console.debug("Deleted list:", listRef.name)
+    // globalThis.dispatchEvent(new CustomEvent("listsChanged", {change: "del", list: list}))
+    LISTS.splice(LISTS.indexOf(list), 1)
+
+    console.debug("Deleted list:", list.meta.name)
     return true
 }
 

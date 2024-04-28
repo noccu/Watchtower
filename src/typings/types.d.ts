@@ -17,32 +17,52 @@ interface CachedUser extends User, TwitterUser {
     onLists?: List[]
 }
 
-/** Parts of a list used in marking users */
-interface ListMarkers {
+/** A list's metadata schema, holding all public info. */
+interface ListMeta {
+    /** List name. */
+    name: string
     /** The label to display on posts. */
     label: string
-    /** The message to display on profiles0 */
+    /** The message to display on profiles */
     msg: string
     /** The color to use for list UI elements. */
     color: string
-}
-
-/** A list following a specific theme. */
-interface List extends ListMarkers {
-    /** List name. */
-    name: string
+    /** The person/people responsible for curating the list. */
+    curation: string | Array<string>
     /** The main/support page of the list. */
     homepage: string
-    /** Download/update URL of the list. Also used as UID*/
-    source: string
-    /** The way new users should be reported. Provides consistent standards for implementations. */
-    reportType: "api" | "gh" | "gl" | "manual",
+    /** The way new users should be reported.
+     * Provides consistent standards for implementations.
+     * Report keys should be omitted if reporting is not supported. */
+    reportType?: "api" | "gh" | "gl" | "manual",
     /** URL to use for reports */
-    reportTarget: string
+    reportTarget?: string
     /** Data required by reportType */
-    reportData: string
-    /** Users on the list, split by platform (key). */
-    users: Object.<string, User[]>
+    reportData?: any
+}
+
+/** Information added by Watchtower on download for various uses. */
+interface LocalListData {
+    /** Download/update URL of the list. Also used as UID */
+    source: string
+    /** The total number of users */
+    size: number
+}
+
+/** Defines the full internal schema of a saved list. */
+interface List {
+    /** The list's metadata */
+    meta: ListMeta
+    /** Data added locally for various reasons */
+    local: LocalListData
+    /** Users on the list, split by platform. */
+    users: PlatformKeyed<User[]>
+}
+
+/** A List wrapper for most uses & serialization. Implemented by CachedList class. */
+interface LoadedList extends Omit<List, "users">{
+    /** Link to full list as originally loaded from storage. Non-enumerable. */
+    readonly full: List
 }
 
 type PLATFORMS = {

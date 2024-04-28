@@ -66,7 +66,7 @@ async function parseResponse(ev) {
     // console.debug(`Response Body: ${resp}`)
 }
 
-/** @returns {Promise<ListMarkers[]>} */
+/** @returns {Promise<LoadedList[]>} */
 function checkUser(userId) {
     return chrome.runtime.sendMessage({
         action: "check-user",
@@ -75,14 +75,14 @@ function checkUser(userId) {
     })
 }
 
-/** @param {ListMarkers[]} onLists */
+/** @param {LoadedList[]} onLists */
 function markProfile(onLists) {
     if (!onLists) return // Not on a list
     for (let list of onLists) {
         /** @type {HTMLDivElement} */
         let msgCopy = MESSAGE.cloneNode()
-        msgCopy.textContent = `${list.label}\n${list.msg}`
-        msgCopy.style.backgroundColor = list.color
+        msgCopy.textContent = `${list.meta.label}\n${list.meta.msg}`
+        msgCopy.style.backgroundColor = list.meta.color
         document.querySelector("[data-testid='UserName']").append(msgCopy)
     }
 }
@@ -90,14 +90,14 @@ function markProfile(onLists) {
 //! If using Observer: Skip the observer when adding labels
 /**
  * @param {HTMLElement} userEl
- * @param {ListMarkers[]} onLists
+ * @param {LoadedList[]} onLists
 */
 function markTweet(userEl, onLists) {
     if (!onLists) return
     for (let list of onLists) {
         let label = LABEL.cloneNode()
-        label.textContent = list.label
-        label.style.backgroundColor = list.color
+        label.textContent = list.meta.label
+        label.style.backgroundColor = list.meta.color
         userEl.append(label)
     }
 }
@@ -190,7 +190,7 @@ function checkTweets() {
             console.debug("Missing user ID:", username, userEl)
             continue
         }
-        checkUser(userId).then(listMetas => markTweet(userEl, listMetas))
+        checkUser(userId).then(onLists => markTweet(userEl, onLists))
         userEl.wtChecked = true
     }
 }

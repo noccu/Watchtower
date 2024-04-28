@@ -33,13 +33,13 @@ function deleteList(ev) {
     })
 }
 
-/** @param {List} data */
+/** @param {LoadedList} data */
 function uiAddList(data) {
     let t_sub = getId("t_sub").content.cloneNode(true)
-    t_sub.querySelector(".sub-name").textContent = data.name
-    t_sub.querySelector(".sub-url").href = data.homepage
-    t_sub.querySelector(".sub-num").textContent = data.size
-    t_sub.querySelector(".sub-del").uid = data.source
+    t_sub.querySelector(".sub-name").textContent = data.meta.name
+    t_sub.querySelector(".sub-url").href = data.meta.homepage
+    t_sub.querySelector(".sub-num").textContent = data.local.size
+    t_sub.querySelector(".sub-del").uid = data.local.source
     getId("subList").append(t_sub)
     TOTAL_SUBS += 1
     getId("subLen").textContent = TOTAL_SUBS

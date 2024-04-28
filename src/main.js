@@ -1,5 +1,5 @@
 import { loadConfig, saveConfig } from "./config.js"
-import { loadLists, lookupUser, getPlatformList, saveNewList, deleteList, getReportableLists } from "./lists.js"
+import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists } from "./lists.js"
 import { reportTargets } from "./constants.js"
 import { reportUser, REPORT_PAGE_READY } from "./report.js"
 
@@ -23,13 +23,18 @@ function respond(msg, answer) {
             answer(lookupUser(msg.platform, msg.id))
             break
         case "add-list":
-            saveNewList(msg.url).then(answer)
+            addList(msg.url).then(answer)
             break
         case "del-list":
-            deleteList(msg.uid).then(answer)
+            removeList(msg.uid).then(answer)
             break
         case "get-cfg":
-            loadConfig().then(answer)
+            loadConfig().then(cfg => {
+                answer({
+                    settings: cfg.settings,
+                    lists: getLists()
+                })
+            })
             break
         case "save-cfg":
             answer(saveConfig())
