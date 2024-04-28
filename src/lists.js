@@ -5,7 +5,7 @@ import { PLATFORMS } from "./constants.js"
  * @type {LoadedList[]} */
 const LISTS = []
 /** Stores user index
-* @type {PlatformKeyed<Object<string, LoadedList[]>>}} */
+* @type {PlatformKeyed<Object<string, LoadedUser>>}} */
 const USERS = {}
 
 /** Known as LoadedList in docs. */
@@ -19,6 +19,16 @@ class CachedList {
             writable: false,
             value: list
         })
+    }
+}
+
+/** Known as LoadedUser in docs. */
+class CachedUser {
+    /** @param {User} user */
+    constructor(user) {
+        this.user = user
+        // /** @type {LoadedList[]} */
+        this.onLists = []
     }
 }
 
@@ -49,24 +59,20 @@ function loadSingleList(listData) {
  * @param {LoadedList} list
 */
 function indexUsers(list) {
-    for (let [plat, platUsers] of Object.entries(list.full.users)) {
-        const mainKey = PLATFORMS[plat]
+    for (var [plat, platUsers] of Object.entries(list.full.users)) {
         for (var user of platUsers) {
-            let userKey = user[mainKey]
             // Link user to list.
-            let onLists = USERS[plat][userKey]
-            if (onLists) {
-                onLists.push(list)
-                continue
-            }
-            USERS[plat][userKey] = [list]
+            /** @type {LoadedUser} */
+            let loadedUser = USERS[plat][user.id] || new CachedUser(user)
+            loadedUser.onLists.push(list)
+            USERS[plat][user.id] = loadedUser
         }
     }
 }
 
 /** @param {PLATFORM} plat */
-export function lookupUser(plat, userMainKey) {
-    return USERS[plat][userMainKey]
+export function lookupUser(plat, id) {
+    return USERS[plat][id]
 }
 
 export function getLists() {

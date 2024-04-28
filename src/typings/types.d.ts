@@ -2,19 +2,17 @@
 interface User {
     /** Platform username/handle. Required. */
     user: string
-    /** Platform ID of the user. This is used as main key. */
+    /** The main platform ID of the user. Used as lookup key. Required*/
     id: string
+    /** [Twitter] Some kinda new id? Unsure, but saved in case. */
+    hash?: string
 }
 
-interface TwitterUser extends User {
-    /** Some kinda new id? Unsure, but saving in case. */
-    hash: string
-}
-
-// No longer used atm.
-interface CachedUser extends User, TwitterUser {
+/** A user cached for fast lookup. Implemented by CachedUser class. */
+interface LoadedUser {
+    user: User
     /** Contains refs to lists the user is on. */
-    onLists?: List[]
+    onLists: LoadedList[]
 }
 
 /** A list's metadata schema, holding all public info. */

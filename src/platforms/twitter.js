@@ -66,7 +66,7 @@ async function parseResponse(ev) {
     // console.debug(`Response Body: ${resp}`)
 }
 
-/** @returns {Promise<LoadedList[]>} */
+/** @returns {Promise<LoadedUser[]>} */
 function checkUser(userId) {
     return chrome.runtime.sendMessage({
         action: "check-user",
@@ -75,10 +75,10 @@ function checkUser(userId) {
     })
 }
 
-/** @param {LoadedList[]} onLists */
-function markProfile(onLists) {
-    if (!onLists) return // Not on a list
-    for (let list of onLists) {
+/** @param {LoadedUser} user */
+function markProfile(user) {
+    if (!user) return // Not on a list
+    for (let list of user.onLists) {
         /** @type {HTMLDivElement} */
         let msgCopy = MESSAGE.cloneNode()
         msgCopy.textContent = `${list.meta.label}\n${list.meta.msg}`
@@ -90,11 +90,11 @@ function markProfile(onLists) {
 //! If using Observer: Skip the observer when adding labels
 /**
  * @param {HTMLElement} userEl
- * @param {LoadedList[]} onLists
+ * @param {LoadedUser[]} user
 */
-function markTweet(userEl, onLists) {
-    if (!onLists) return
-    for (let list of onLists) {
+function markTweet(userEl, user) {
+    if (!user) return
+    for (let list of user.onLists) {
         let label = LABEL.cloneNode()
         label.textContent = list.meta.label
         label.style.backgroundColor = list.meta.color
