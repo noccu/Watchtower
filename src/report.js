@@ -24,9 +24,9 @@ function getReportData(tab, targetLink) {
  * @param {User} user
 */
 async function confirmReport(tab, user) {
-    chrome.action.setPopup({ popup: POPUP_PATH })
     // Not available in Chrome in most normal cases. It's been years.
     if (chrome.action.openPopup) {
+        chrome.action.setPopup({ popup: POPUP_PATH })
         await chrome.action.openPopup()
     }
     else {
