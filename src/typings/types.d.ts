@@ -78,7 +78,8 @@ type PLATFORM = keyof PLATFORMS
 type PlatformKeyed<T> = {[plat in PLATFORM]: T}
 
 interface Settings {
-    //todo
+    lastUpdate: number
+    updateInterval: number
 }
 
 interface Config {

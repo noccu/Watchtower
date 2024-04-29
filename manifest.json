@@ -38,6 +38,7 @@
    "options_page": "src/options/options.html",
    "action": {},
    "host_permissions": [
-      "file:///"
+      "file:///",
+      "<all_urls>"
    ]
 }

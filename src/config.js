@@ -27,7 +27,9 @@ export function saveConfig(key = undefined) {
     console.log("Config saved")
 }
 
-/** @param {keyof Config} key */
+/**
+ * @template {keyof Config} K
+ * @param {K & string} key */
 export function getConfig(key) {
     return CONFIG[key]
 }

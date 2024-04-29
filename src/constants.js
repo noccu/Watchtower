@@ -13,6 +13,9 @@ export const reportTargets = [
 // The extension's default options
 /** @type {Config} */
 export const CONFIG_DEFAULT = {
-    settings: {},
+    settings: {
+        lastUpdate: 0,
+        updateInterval: 6.048e8
+    },
     lists: []
 }

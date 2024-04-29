@@ -1,5 +1,5 @@
 import { loadConfig, saveConfig } from "./config.js"
-import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists } from "./lists.js"
+import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists, checkListUpdates } from "./lists.js"
 import { reportTargets } from "./constants.js"
 import { reportUser, REPORT_PAGE_READY } from "./report.js"
 
@@ -51,7 +51,10 @@ function respond(msg, answer) {
 }
 
 // Management
-const READY = loadConfig().then(cfg => loadLists(cfg.lists))
+const READY = loadConfig().then(async cfg => {
+    await checkListUpdates()
+    loadLists(cfg.lists)
+})
 // Menu creation will fail after wake-up.
 chrome.contextMenus.create(
     {

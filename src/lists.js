@@ -1,4 +1,4 @@
-import { getConfig, markConfigChanged } from "./config.js"
+import { changeSetting, getConfig, markConfigChanged, saveConfig } from "./config.js"
 import { PLATFORMS } from "./constants.js"
 
 /** Pointers to loaded list data, users excluded.
@@ -105,11 +105,6 @@ export async function addList(url) {
         return "List already exists"
     }
     let data = await downLoadList(url)
-    // Add some local data
-    data.local = {
-        source: url,
-        size: Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
-    }
 
     getConfig("lists").push(data)
     markConfigChanged()
@@ -118,6 +113,28 @@ export async function addList(url) {
 
     console.debug("List added:", data.meta.name)
     return data
+}
+
+async function updateLists() {
+    console.log("Updating lists.")
+    let savedLists = getConfig("lists")
+    for (var idx = 0; idx < savedLists.length; idx++) {
+        try { savedLists[idx] = await downLoadList(savedLists[idx].local.source) }
+        catch { continue }
+    }
+    saveConfig("lists")
+}
+
+export async function checkListUpdates() {
+    console.debug("Checking list updates.")
+    let set = getConfig("settings")
+    let now = Date.now()
+    if (now - set.lastUpdate > set.updateInterval) {
+        console.debug("Updates required.")
+        changeSetting("lastUpdate", now)
+        saveConfig("settings")
+        return updateLists()
+    }
 }
 
 /** Remove a list by source URL/UID */
@@ -163,6 +180,13 @@ async function downLoadList(url) {
         }
     )
     // The above should throw out of the function if a problem occurs.
+
+    // Add some local data
+    data.local = {
+        source: url,
+        size: Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+    }
+
     console.log("List fetched")
     return data
 }
