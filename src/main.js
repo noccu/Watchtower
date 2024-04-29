@@ -45,6 +45,7 @@ function respond(msg, answer) {
         // Don't ask
         case "report-page-loaded":
             REPORT_PAGE_READY.resolve()
+            answer() // Quiet msg conn error due to async reply
             break
     }
 }
