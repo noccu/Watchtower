@@ -70,9 +70,11 @@ function indexUsers(list) {
     }
 }
 
-/** @param {PLATFORM} plat */
-export function lookupUser(plat, id) {
-    return USERS[plat][id]
+/**
+ * @param {PLATFORM} plat
+ * @param {User} user */
+export function lookupUser(plat, user) {
+    return USERS[plat][user.id]
 }
 
 export function getLists() {

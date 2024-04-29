@@ -19,8 +19,8 @@ function respond(msg, answer) {
             answer(getPlatformList(msg.platform))
             break
         case "check-user":
-            console.debug("User lookup requested:", msg.platform, msg.id) //! dbg
-            answer(lookupUser(msg.platform, msg.id))
+            console.debug("User lookup requested:", msg.platform, msg.user) //! dbg
+            answer(lookupUser(msg.platform, msg.user))
             break
         case "add-list":
             addList(msg.url).then(answer)

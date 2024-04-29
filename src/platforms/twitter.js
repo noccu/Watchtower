@@ -7,6 +7,7 @@ LABEL.className = "tweet-label"
 const MESSAGE = document.createElement("div")
 MESSAGE.className = "profile-mark-msg"
 
+/** @type {User[]} */
 const USER_MAP = {}
 /** @type {HTMLCollectionOf<HTMLElement>} */
 var USERNAME_ELEMENTS
@@ -47,8 +48,7 @@ async function parseResponse(ev) {
     let resp = JSON.parse(ev.detail.data)
     //? Set a global state?
     if (reqType.isProfile()) {
-        checkUser(resp.data.user.result.rest_id).then(markProfile)
-        //todo: add user to map?
+        checkUser(mapUser(resp.data.user.result)).then(markProfile)
     }
     else if (reqType.isTweetList()) {
         handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
@@ -67,11 +67,11 @@ async function parseResponse(ev) {
 }
 
 /** @returns {Promise<LoadedUser[]>} */
-function checkUser(userId) {
+function checkUser(user) {
     return chrome.runtime.sendMessage({
         action: "check-user",
         platform: "twitter",
-        id: userId
+        user
     })
 }
 
@@ -132,15 +132,27 @@ function handleItem(item) {
     mapFromTweetData(item.itemContent.tweet_results.result)
 }
 
-/** Extracts info from tweet data to create user map */
+/** Builds map from API user data obj.
+ * @returns {User}
+*/
+function mapUser(userData){
+    let user = userData.legacy.screen_name
+    if (user in USER_MAP) return
+    let id = userData.rest_id
+    let hash = userData.id
+    return USER_MAP[user] = {
+        user,
+        id,
+        hash
+    }
+}
+
+/** Map relevant users from API tweet data. */
 function mapFromTweetData(data){
     // Oh very fun, twitter. APIs should be consistent!
     data = data.tweet || data
     // let tweetId = data.rest_id
-    let user = data.core.user_results.result
-    let userId = user.rest_id
-    let userHandle = user.legacy.screen_name
-    USER_MAP[userHandle] = userId
+    mapUser(data.core.user_results.result)
     let secondaryTweetData = data.legacy.retweeted_status_result || data.quoted_status_result
     if (secondaryTweetData) {
         mapFromTweetData(secondaryTweetData.result)
@@ -185,12 +197,12 @@ function checkTweets() {
             return
         }
         let username = nameEl.textContent.slice(1)
-        let userId = USER_MAP[username]
-        if (!userId) {
+        let user = USER_MAP[username]
+        if (!user) {
             console.debug("Missing user ID:", username, userEl)
             continue
         }
-        checkUser(userId).then(onLists => markTweet(userEl, onLists))
+        checkUser(user).then(onLists => markTweet(userEl, onLists))
         userEl.wtChecked = true
     }
 }
@@ -202,8 +214,7 @@ function msgResponder(msg, sender, answer) {
         let target = new URL(msg.targetLink)
         let username = target.pathname.split("/")[1]
         answer({
-            user: username,
-            id: USER_MAP[username],
+            user: USER_MAP[username],
             platform: PLATFORM
         })
     }

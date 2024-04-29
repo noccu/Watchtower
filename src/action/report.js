@@ -15,6 +15,7 @@ async function loadReportableLists() {
     }
 }
 
+/** @param {User} data */
 function updateReportData(data) {
     CUR_REPORT = data
     document.getElementById("user-name").textContent = data.user

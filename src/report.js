@@ -9,7 +9,9 @@ export async function reportUser(data, tab) {
     confirmReport(tab, user)
 }
 
-/** @param {chrome.tabs.Tab} tab */
+/**
+ * @param {chrome.tabs.Tab} tab
+ * @returns {Promise<User>} */
 function getReportData(tab, targetLink) {
     return chrome.tabs.sendMessage(
         tab.id,
