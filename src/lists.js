@@ -148,7 +148,7 @@ export async function removeList(src) {
 
     for (var [plat, platUsers] of Object.entries(list.full.users)) {
         for (var user of platUsers) {
-            var onList = lookupUser(plat, user.id)
+            var onList = lookupUser(plat, user).onLists
             onList.splice(onList.indexOf(list), 1)
         }
     }
