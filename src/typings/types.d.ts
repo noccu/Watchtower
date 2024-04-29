@@ -8,6 +8,13 @@ interface User {
     hash?: string
 }
 
+/** The object format returned by content script msg replies. */
+interface CSUser {
+    user: User
+    /** Platform the user belongs to. */
+    platform: PLATFORM
+}
+
 /** A user cached for fast lookup. Implemented by CachedUser class. */
 interface LoadedUser {
     user: User

@@ -1,0 +1,30 @@
+body {
+    font-size: 1rem;
+}
+
+section.user > div {
+    margin-bottom: 0.25em;
+}
+
+#user-name {
+    font-weight: 500;
+}
+
+#user-data {
+    background-color: lightgray;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 0.75em;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+
+section.report-btn {
+    text-align: center;
+    margin: 1em;
+}
+
+#report {
+    font-size: 1.3em;
+    background-color: #ff6a6a;
+}

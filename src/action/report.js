@@ -1,6 +1,6 @@
 /** @type {HTMLSelectElement} */
 const LIST_CHOICE = document.getElementById("lists")
-/** @type {User} */
+/** @type {CSUser} */
 var CUR_REPORT
 
 async function loadReportableLists() {
@@ -15,11 +15,12 @@ async function loadReportableLists() {
     }
 }
 
-/** @param {User} data */
+/** @param {CSUser} data */
 function updateReportData(data) {
     CUR_REPORT = data
-    document.getElementById("user-name").textContent = data.user
-    document.getElementById("user-data").textContent = data.id
+    let {user, ...ids} = data.user
+    document.getElementById("user-name").textContent = user
+    document.getElementById("user-data").textContent = JSON.stringify(ids, null, 2)
 }
 
 function swListener(msg, sender, answer) {
@@ -32,7 +33,7 @@ function report() {
     if (LIST_CHOICE.selectedIndex == -1) return
     /** @type {LoadedList} */
     let selectedList = LIST_CHOICE.options[LIST_CHOICE.selectedIndex].list
-    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
+    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user.user} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
 }
 
 function onLoad() {

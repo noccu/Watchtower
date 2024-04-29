@@ -3,22 +3,28 @@
 
 <head>
     <title>Watchtower Report</title>
-    <!-- <link rel="stylesheet" href="report.css"> -->
+    <link rel="stylesheet" href="report.css">
     <script defer src="report.js"></script>
 </head>
 
 <body>
-    <div>
-        Report user: <span id="user-name"></span>
-    </div>
-    <div id="user-data">
-    </div>
-    <div>
+    <section class="user">
+        <div>
+            Report user: @<span id="user-name">DoNotReport</span>
+        </div>
+        <div id="user-data">
+            Do not report to list if no data displays here.
+            Report a bug to Watchtower instead.
+        </div>
+    </section>
+    <section>
         To the following list:
         <select id="lists">
         </select>
-    </div>
-    <button id="report">Report</button>
+    </section>
+    <section class="report-btn">
+        <button id="report">Report</button>
+    </section>
 </body>
 
 </html>

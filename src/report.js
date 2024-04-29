@@ -11,7 +11,7 @@ export async function reportUser(data, tab) {
 
 /**
  * @param {chrome.tabs.Tab} tab
- * @returns {Promise<User>} */
+ * @returns {Promise<CSUser>} */
 function getReportData(tab, targetLink) {
     return chrome.tabs.sendMessage(
         tab.id,
@@ -23,7 +23,7 @@ function getReportData(tab, targetLink) {
 
 /**
  * @param {chrome.tabs.Tab} tab
- * @param {User} user
+ * @param {CSUser} user
 */
 async function confirmReport(tab, user) {
     // Not available in Chrome in most normal cases. It's been years.
@@ -36,8 +36,8 @@ async function confirmReport(tab, user) {
             type: "popup",
             focused: true,
             url: POPUP_PATH,
-            width: 300,
-            height: 300
+            width: 360,
+            height: 250
         })
     }
     // Because there's no way to wait until the page is fully loaded, apparently! Whee, hacks!
