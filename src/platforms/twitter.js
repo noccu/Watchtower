@@ -5,7 +5,9 @@ const PLATFORM = "twitter"
 const LABEL = document.createElement("span")
 LABEL.className = "tweet-label"
 const MESSAGE = document.createElement("div")
-MESSAGE.className = "profile-mark-msg"
+MESSAGE.className = "profile-msg"
+const MESSAGE_CONTAINER = document.createElement("div")
+MESSAGE_CONTAINER.id = "profile-msg-container"
 
 /** @type {User[]} */
 const USER_MAP = {}
@@ -78,14 +80,17 @@ function checkUser(user) {
 
 /** @param {LoadedUser} user */
 function markProfile(user) {
+    // Clear existing lists as Twitter edits profile info in-place.
+    document.getElementById(MESSAGE_CONTAINER.id)?.remove()
     if (!user) return // Not on a list
     for (let list of user.onLists) {
         /** @type {HTMLDivElement} */
         let msgCopy = MESSAGE.cloneNode()
         msgCopy.textContent = `${list.meta.label}\n${list.meta.msg}`
         msgCopy.style.backgroundColor = list.meta.color
-        document.querySelector("[data-testid='UserName']").append(msgCopy)
+        MESSAGE_CONTAINER.append(msgCopy)
     }
+    document.querySelector("[data-testid='UserName']").append(MESSAGE_CONTAINER)
 }
 
 //! If using Observer: Skip the observer when adding labels
