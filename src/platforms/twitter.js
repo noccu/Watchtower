@@ -66,8 +66,9 @@ async function parseResponse(ev) {
     // console.debug(`Response Body: ${resp}`)
 }
 
-/** @returns {Promise<LoadedUser[]>} */
+/** @returns {Promise<LoadedUser>} */
 function checkUser(user) {
+    console.debug("Checking user:", user)
     return chrome.runtime.sendMessage({
         action: "check-user",
         platform: "twitter",
@@ -90,7 +91,7 @@ function markProfile(user) {
 //! If using Observer: Skip the observer when adding labels
 /**
  * @param {HTMLElement} userEl
- * @param {LoadedUser[]} user
+ * @param {LoadedUser} user
 */
 function markTweet(userEl, user) {
     if (!user) return
