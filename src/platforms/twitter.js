@@ -19,38 +19,30 @@ class RequestType {
         this.endpoint = endpoint
     }
     // UserByScreenName -> Profile page only (does not fire on hover)
-    isProfile() {
-        return this.endpoint.endsWith("me") ? true : false
-    }
+    isProfile() { return this.endpoint.endsWith("me") ? true : false }
     // UserTweets
-    isTweetList() {
-        return this.endpoint.endsWith("s") ? true : false
-    }
+    isTweetList() { return this.endpoint.endsWith("s") ? true : false }
     // Community TL
-    isCommunity() {
-        return this.endpoint.startsWith("C") ? true : false
-    }
+    isCommunity() { return this.endpoint.startsWith("C") ? true : false }
     // Tweet detail/status
-    isTweetDetail() {
-        return this.endpoint.endsWith("l") ? true : false
-    }
+    isTweetDetail() { return this.endpoint.endsWith("l") ? true : false }
     // Home timeline
-    isHome() {
-        return this.endpoint.startsWith("H") ? true : false
-    }
+    isHome() { return this.endpoint.startsWith("H") ? true : false }
 }
 
 
 /** @param {CustomEvent} ev */
-async function parseResponse(ev) {
+function parseResponse(ev) {
     let m = ev.detail.url.match(PATTERN)
     if (!m) return
 
     let reqType = new RequestType(m[1])
     let resp = JSON.parse(ev.detail.data)
+    console.debug(`Parsing response for: ${reqType.endpoint}`)
     //? Set a global state?
     if (reqType.isProfile()) {
         checkUser(mapUser(resp.data.user.result)).then(markProfile)
+        console.debug("New map:", USER_MAP)
     }
     else if (reqType.isTweetList()) {
         handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
@@ -64,19 +56,7 @@ async function parseResponse(ev) {
     else if (reqType.isHome()) {
         handleInstructions(resp.data.home.home_timeline_urt.instructions)
     }
-    console.debug(`Response for: ${reqType.endpoint}`)
     // console.debug(`Response Body: ${resp}`)
-}
-
-/** @returns {Promise<LoadedUser>} */
-function checkUser(user) {
-    console.debug("Checking user:", user)
-    if (!user) return Promise.resolve()
-    return chrome.runtime.sendMessage({
-        action: "check-user",
-        platform: "twitter",
-        user
-    })
 }
 
 /** @param {LoadedUser} user */
@@ -226,6 +206,19 @@ function findUserFromNameContainer(element) {
         console.debug("Missing user ID:", username, element, nameEl)
     }
     return user
+}
+
+// Communication //
+
+/** @returns {Promise<LoadedUser>} */
+function checkUser(user) {
+    console.debug("Checking user:", user)
+    if (!user) return Promise.resolve()
+    return chrome.runtime.sendMessage({
+        action: "check-user",
+        platform: "twitter",
+        user
+    })
 }
 
 // Reports
