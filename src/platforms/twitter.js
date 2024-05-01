@@ -11,8 +11,12 @@ MESSAGE_CONTAINER.id = "profile-msg-container"
 
 /** @type {User[]} */
 const USER_MAP = {}
-/** @type {HTMLCollectionOf<HTMLElement>} */
-var USERNAME_ELEMENTS
+const NAME_ELEMENTS = {
+    /** @type {HTMLCollectionOf<HTMLElement>} */
+    profile: undefined,
+    /** @type {HTMLCollectionOf<HTMLElement>} */
+    tweets: undefined
+}
 
 class RequestType {
     constructor(endpoint) {
@@ -41,7 +45,7 @@ function parseResponse(ev) {
     console.debug(`Parsing response for: ${reqType.endpoint}`)
     //? Set a global state?
     if (reqType.isProfile()) {
-        checkUser(mapUser(resp.data.user.result)).then(markProfile)
+        mapUser(resp.data.user.result)
         console.debug("New map:", USER_MAP)
     }
     else if (reqType.isTweetList()) {
@@ -57,36 +61,6 @@ function parseResponse(ev) {
         handleInstructions(resp.data.home.home_timeline_urt.instructions)
     }
     // console.debug(`Response Body: ${resp}`)
-}
-
-/** @param {LoadedUser} user */
-function markProfile(user) {
-    // Clear existing lists as Twitter edits profile info in-place.
-    document.getElementById(MESSAGE_CONTAINER.id)?.remove()
-    if (!user) return // Not on a list
-    for (let list of user.onLists) {
-        /** @type {HTMLDivElement} */
-        let msgCopy = MESSAGE.cloneNode()
-        msgCopy.textContent = `${list.meta.label}\n${list.meta.msg}`
-        msgCopy.style.backgroundColor = list.meta.color
-        MESSAGE_CONTAINER.append(msgCopy)
-    }
-    document.querySelector("[data-testid='UserName']").append(MESSAGE_CONTAINER)
-}
-
-//! If using Observer: Skip the observer when adding labels
-/**
- * @param {HTMLElement} userEl
- * @param {LoadedUser} user
-*/
-function markTweet(userEl, user) {
-    if (!user) return
-    for (let list of user.onLists) {
-        let label = LABEL.cloneNode()
-        label.textContent = list.meta.label
-        label.style.backgroundColor = list.meta.color
-        userEl.append(label)
-    }
 }
 
 /** Process API instructions to map Username -> ID */
@@ -152,29 +126,87 @@ function mapFromTweetData(data){
  */
 function checkChanges(recordList, obs) {
     for (let record of recordList) {
-        if (!record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) continue
-        if (!trackUsers()) return
-        obs.takeRecords()
-        checkTweets()
-        return
+        //! Debug
+        // if (record.addedNodes.length == 1) console.log(record.target, record.addedNodes[0])
+        // else console.log(record.target, record.addedNodes)
+
+        // Profile container, first profile visit.
+        if (record.target.childNodes[1]?.dataset?.testid?.[4] == "N") {
+            trackProfileName()
+            processProfile()
+        }
+        // Tweets container, every tweet load.
+        else if (record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) {
+            trackTweetNames()
+            processTweets()
+        }
     }
 }
 
-function trackUsers() {
-    if (USERNAME_ELEMENTS !== undefined) return true
-    let userEle = document.querySelector("[data-testid='User-Name']")
-    if (!userEle) return false
-    USERNAME_ELEMENTS = document.getElementsByClassName(userEle.className)
+// Could hardcode classes but gambling on datasets staying consistent longer.
+// Hope classes remain unique.
+function trackProfileName() {
+    if (NAME_ELEMENTS.profile) return
+    let profileEle = document.querySelector("[data-testid='UserName']")
+    if (!profileEle) return false
+    let profileNameObs = new MutationObserver(processProfile)
+    // Doesn't trigger without subtree. Reasons…
+    profileNameObs.observe(profileEle, {characterData: true, subtree: true})
+    NAME_ELEMENTS.profile = profileEle
+    return true
+}
+function trackTweetNames() {
+    if (NAME_ELEMENTS.tweets) return true
+    let tweetUserEle = document.querySelector("[data-testid='User-Name']")
+    if (!tweetUserEle)  return false
+    NAME_ELEMENTS.tweets = document.getElementsByClassName(tweetUserEle.className)
     return true
 }
 
-function checkTweets() {
+/** Utility function to deal with special cases. */
+function processProfile() {
+    let user = findUserFromNameContainer(NAME_ELEMENTS.profile)
+    checkUser(user).then(data => markProfile(data))
+}
+
+/** Finds usernames in tweets and sends unprocessed ones for marking. */
+function processTweets() {
     //? Maybe try to link the tweet's rest_id from API?
-    for (let userEl of USERNAME_ELEMENTS) {
-        if (userEl.wtChecked) continue
-        let user = findUserFromNameContainer(userEl)
-        checkUser(user).then(onLists => markTweet(userEl, onLists))
-        userEl.wtChecked = true
+    for (let element of NAME_ELEMENTS.tweets) {
+        if (element.wtChecked) continue
+        var user = findUserFromNameContainer(element)
+        checkUser(user).then(data => markTweet(element, data))
+        element.wtChecked = true
+    }
+}
+
+/** @param {LoadedUser} user */
+function markProfile(user) {
+    // Clear existing lists as Twitter edits profile info in-place.
+    document.getElementById(MESSAGE_CONTAINER.id)?.remove()
+    if (!user) return // Not on a list
+    let container = MESSAGE_CONTAINER.cloneNode()
+    for (let list of user.onLists) {
+        /** @type {HTMLDivElement} */
+        let msgCopy = MESSAGE.cloneNode()
+        msgCopy.textContent = `${list.meta.label}\n${list.meta.msg}`
+        msgCopy.style.backgroundColor = list.meta.color
+        container.append(msgCopy)
+    }
+    NAME_ELEMENTS.profile.append(container)
+}
+
+/**
+ * @param {HTMLElement} userEl
+ * @param {LoadedUser} user
+*/
+function markTweet(userEl, user) {
+    if (!user) return
+    for (let list of user.onLists) {
+        let label = LABEL.cloneNode()
+        label.textContent = list.meta.label
+        label.style.backgroundColor = list.meta.color
+        userEl.append(label)
     }
 }
 
