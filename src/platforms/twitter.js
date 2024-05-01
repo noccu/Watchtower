@@ -71,6 +71,7 @@ async function parseResponse(ev) {
 /** @returns {Promise<LoadedUser>} */
 function checkUser(user) {
     console.debug("Checking user:", user)
+    if (!user) return Promise.resolve()
     return chrome.runtime.sendMessage({
         action: "check-user",
         platform: "twitter",
@@ -191,26 +192,40 @@ function checkTweets() {
     //? Maybe try to link the tweet's rest_id from API?
     for (let userEl of USERNAME_ELEMENTS) {
         if (userEl.wtChecked) continue
-        if (!userEl.dataset.testid?.startsWith("U")) continue
-        // Quote tweets and maybe others do not have links on name.
-        // Name span can be split by <img> when name has emotes.
-        let nameEl = Array.prototype.find.call(
-            userEl.getElementsByTagName("span"),
-            el => el.textContent.startsWith("@")
-        )
-        if (!nameEl) {
-            console.debug("Couldn't find name element:", userEl)
-            return
-        }
-        let username = nameEl.textContent.slice(1)
-        let user = USER_MAP[username]
-        if (!user) {
-            console.debug("Missing user ID:", username, userEl)
-            continue
-        }
+        let user = findUserFromNameContainer(userEl)
         checkUser(user).then(onLists => markTweet(userEl, onLists))
         userEl.wtChecked = true
     }
+}
+
+// Utils //
+
+/** @param {HTMLElement} element */
+function findNameElement(element) {
+    if (!element.dataset.testid?.startsWith("U")) return
+    // Quote tweets and maybe others do not have links on name.
+    // Name span can be split by <img> when name has emotes.
+    let nameEl = Array.prototype.find.call(
+        element.getElementsByTagName("span"),
+        el => el.textContent.startsWith("@")
+    )
+    if (!nameEl) {
+        console.debug("Couldn't find name element for:", element)
+        return
+    }
+    return nameEl
+}
+
+/** @param {HTMLElement} element */
+function findUserFromNameContainer(element) {
+    let nameEl = findNameElement(element)
+    if (!nameEl) return
+    let username = nameEl.textContent.slice(1)
+    let user = USER_MAP[username]
+    if (!user) {
+        console.debug("Missing user ID:", username, element, nameEl)
+    }
+    return user
 }
 
 // Reports
