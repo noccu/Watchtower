@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunityTweetsTimeline|TweetDetail)(?:\\?|$)")
+const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail)(?:\\?|$)")
 const PLATFORM = "twitter"
 
 // Markers
@@ -26,8 +26,10 @@ class RequestType {
     isProfile() { return this.endpoint.endsWith("me") ? true : false }
     // UserTweets
     isTweetList() { return this.endpoint.endsWith("s") ? true : false }
-    // Community TL
+    // Community TL (specific)
     isCommunity() { return this.endpoint.startsWith("C") ? true : false }
+    // Community TL (ranked/home)
+    andIsCommunityRanked() { return this.endpoint[8] == "i" ? true : false}
     // Tweet detail/status
     isTweetDetail() { return this.endpoint.endsWith("l") ? true : false }
     // Home timeline
@@ -44,6 +46,7 @@ function parseResponse(ev) {
     let resp = JSON.parse(ev.detail.data)
     console.debug(`Parsing response for: ${reqType.endpoint}`)
     //? Set a global state?
+    //todo: Probably convert to switch or something otherwise useful.
     if (reqType.isProfile()) {
         mapUser(resp.data.user.result)
         console.debug("New map:", USER_MAP)
@@ -52,7 +55,12 @@ function parseResponse(ev) {
         handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
     }
     else if (reqType.isCommunity()) {
-        handleInstructions(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
+        if (reqType.andIsCommunityRanked()) {
+            handleInstructions(resp.data.viewer.ranked_communities_timeline.timeline.instructions)
+        }
+        else {
+            handleInstructions(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
+        }
     }
     else if (reqType.isTweetDetail()) {
         handleInstructions(resp.data.threaded_conversation_with_injections_v2.instructions)
@@ -117,6 +125,12 @@ function mapFromTweetData(data){
     let secondaryTweetData = data.legacy.retweeted_status_result || data.quoted_status_result
     if (secondaryTweetData) {
         mapFromTweetData(secondaryTweetData.result)
+    }
+    let communityData = data.community_results?.result
+    if (communityData) {
+        for (var user of communityData.members_facepile_results) {
+            mapUser(user.result)
+        }
     }
 }
 
