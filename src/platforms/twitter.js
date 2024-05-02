@@ -4,6 +4,8 @@ const PLATFORM = "twitter"
 // Markers
 const LABEL = document.createElement("span")
 LABEL.className = "tweet-label"
+const LABEL_CONTAINER = document.createElement("div")
+LABEL_CONTAINER.className = "tweet-label-container"
 const MESSAGE = document.createElement("div")
 MESSAGE.className = "profile-msg"
 const MESSAGE_CONTAINER = document.createElement("div")
@@ -214,12 +216,15 @@ function markProfile(user) {
 */
 function markTweet(userEl, user) {
     if (!user) return
+    // Empty container used to enforce horizontal labels in all(?) cases.
+    let container = LABEL_CONTAINER.cloneNode()
     for (let list of user.onLists) {
         let label = LABEL.cloneNode()
         label.textContent = list.meta.label
         label.style.backgroundColor = list.meta.color
-        userEl.append(label)
+        container.append(label)
     }
+    userEl.append(container)
 }
 
 // Utils //
