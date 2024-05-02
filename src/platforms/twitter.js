@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail)(?:\\?|$)")
+const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail|BlockedAccountsAll)(?:\\?|$)")
 const PLATFORM = "twitter"
 
 // Markers
@@ -47,9 +47,11 @@ class RequestType {
     // Community TL (ranked/home)
     andIsCommunityRanked() { return this.endpoint[8] == "i" ? true : false}
     // Tweet detail/status
-    isTweetDetail() { return this.endpoint.endsWith("l") ? true : false }
+    isTweetDetail() { return this.endpoint.endsWith("il") ? true : false }
     // Home timeline
     isHome() { return this.endpoint.startsWith("H") ? true : false }
+    // Block list
+    isBlocked() { return this.endpoint.startsWith("B") ? true : false }
 }
 
 
@@ -84,6 +86,9 @@ function parseResponse(ev) {
     else if (reqType.isHome()) {
         handleInstructions(resp.data.home.home_timeline_urt.instructions)
     }
+    else if (reqType.isBlocked()) {
+        handleInstructions(resp.data.viewer.timeline.timeline.instructions)
+    }
     // console.debug(`Response Body: ${resp}`)
 }
 
@@ -113,8 +118,14 @@ function handleInstructions(instructions) {
 }
 
 function handleItem(item) {
-    if (item.itemContent?.itemType != "TimelineTweet") return
-    mapFromTweetData(item.itemContent.tweet_results.result)
+    switch (item.itemContent?.itemType) {
+        case "TimelineTweet":
+            mapFromTweetData(item.itemContent.tweet_results.result)
+            break
+        case "TimelineUser":
+            mapUser(item.itemContent.user_results.result)
+            break
+    }
 }
 
 /** Builds map from API user data obj.
