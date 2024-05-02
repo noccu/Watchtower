@@ -12,12 +12,6 @@ MESSAGE_CONTAINER.id = "profile-msg-container"
 
 /** @type {Object<string, UserPromise>} */
 const USER_MAP = {}
-const NAME_ELEMENTS = {
-    /** @type {HTMLCollectionOf<HTMLElement>} */
-    profile: undefined,
-    /** @type {HTMLCollectionOf<HTMLElement>} */
-    tweets: undefined
-}
 
 class UserPromise {
     isResolved = false
@@ -170,47 +164,27 @@ function checkChanges(recordList, obs) {
 
         // Profile container, first profile visit.
         if (record.target.childNodes[1]?.dataset?.testid?.[4] == "N") {
-            trackProfileName()
             processProfile()
+            return
         }
         // Tweets container, every tweet load.
         else if (record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) {
-            trackTweetNames()
             processTweets()
+            return
         }
     }
 }
 
-// Could hardcode classes but gambling on datasets staying consistent longer.
-// Hope classes remain unique.
-function trackProfileName() {
-    if (NAME_ELEMENTS.profile) return
-    let profileEle = document.querySelector("[data-testid='UserName']")
-    if (!profileEle) return false
-    let profileNameObs = new MutationObserver(processProfile)
-    // Doesn't trigger without subtree. Reasons…
-    profileNameObs.observe(profileEle, {characterData: true, subtree: true})
-    NAME_ELEMENTS.profile = profileEle
-    return true
-}
-function trackTweetNames() {
-    if (NAME_ELEMENTS.tweets) return true
-    let tweetUserEle = document.querySelector("[data-testid='User-Name']")
-    if (!tweetUserEle)  return false
-    NAME_ELEMENTS.tweets = document.getElementsByClassName(tweetUserEle.className)
-    return true
-}
-
 /** Utility function to deal with special cases. */
 async function processProfile() {
-    let user = await findUserFromNameContainer(NAME_ELEMENTS.profile)
+    let user = await findUserFromNameContainer(document.querySelector("[data-testid='UserName']"))
     checkUser(user).then(data => markProfile(data))
 }
 
 /** Finds usernames in tweets and sends unprocessed ones for marking. */
 async function processTweets() {
     //? Maybe try to link the tweet's rest_id from API?
-    for (let element of NAME_ELEMENTS.tweets) {
+    for (let element of document.querySelectorAll("[data-testid='User-Name']")) {
         if (element.wtChecked) continue
         element.wtChecked = true
         var user = await findUserFromNameContainer(element)
@@ -231,7 +205,7 @@ function markProfile(user) {
         msgCopy.style.backgroundColor = list.meta.color
         container.append(msgCopy)
     }
-    NAME_ELEMENTS.profile.append(container)
+    document.querySelector("[data-testid='UserName']").append(container)
 }
 
 /**
