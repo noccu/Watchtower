@@ -34,60 +34,38 @@ class UserPromise {
     }
 }
 
-class RequestType {
-    constructor(endpoint) {
-        this.endpoint = endpoint
-    }
-    // UserByScreenName -> Profile page only (does not fire on hover)
-    isProfile() { return this.endpoint.endsWith("me") ? true : false }
-    // UserTweets
-    isTweetList() { return this.endpoint.endsWith("s") ? true : false }
-    // Community TL (specific)
-    isCommunity() { return this.endpoint.startsWith("C") ? true : false }
-    // Community TL (ranked/home)
-    andIsCommunityRanked() { return this.endpoint[8] == "i" ? true : false}
-    // Tweet detail/status
-    isTweetDetail() { return this.endpoint.endsWith("il") ? true : false }
-    // Home timeline
-    isHome() { return this.endpoint.startsWith("H") ? true : false }
-    // Block list
-    isBlocked() { return this.endpoint.startsWith("B") ? true : false }
-}
-
-
 /** @param {CustomEvent} ev */
-function parseResponse(ev) {
+async function parseResponse(ev) {
     let m = ev.detail.url.match(PATTERN)
     if (!m) return
 
-    let reqType = new RequestType(m[1])
+    let reqType = m[1]
     let resp = JSON.parse(ev.detail.data)
-    console.debug(`Parsing response for: ${reqType.endpoint}`)
+    console.debug(`Parsing response for: ${reqType}`)
     //? Set a global state?
-    //todo: Probably convert to switch or something otherwise useful.
-    if (reqType.isProfile()) {
-        mapUser(resp.data.user.result)
-        console.debug("New map:", USER_MAP)
-    }
-    else if (reqType.isTweetList()) {
-        handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
-    }
-    else if (reqType.isCommunity()) {
-        if (reqType.andIsCommunityRanked()) {
-            handleInstructions(resp.data.viewer.ranked_communities_timeline.timeline.instructions)
-        }
-        else {
+    switch (reqType) {
+        case "UserByScreenName":
+            mapUser(resp.data.user.result)
+            console.debug("New map:", USER_MAP)
+            break
+        case "UserTweets":
+            handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
+            break
+        case "CommunityTweetsTimeline":
             handleInstructions(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
-        }
-    }
-    else if (reqType.isTweetDetail()) {
-        handleInstructions(resp.data.threaded_conversation_with_injections_v2.instructions)
-    }
-    else if (reqType.isHome()) {
-        handleInstructions(resp.data.home.home_timeline_urt.instructions)
-    }
-    else if (reqType.isBlocked()) {
-        handleInstructions(resp.data.viewer.timeline.timeline.instructions)
+            break
+        case "CommunitiesRankedTimeline":
+            handleInstructions(resp.data.viewer.ranked_communities_timeline.timeline.instructions)
+            break
+        case "TweetDetail":
+            handleInstructions(resp.data.threaded_conversation_with_injections_v2.instructions)
+            break
+        case "HomeTimeline":
+            handleInstructions(resp.data.home.home_timeline_urt.instructions)
+            break
+        case "BlockedAccountsAll":
+            handleInstructions(resp.data.viewer.timeline.timeline.instructions)
+            break
     }
     // console.debug(`Response Body: ${resp}`)
 }
