@@ -9,13 +9,33 @@ MESSAGE.className = "profile-msg"
 const MESSAGE_CONTAINER = document.createElement("div")
 MESSAGE_CONTAINER.id = "profile-msg-container"
 
-/** @type {User[]} */
+
+/** @type {Object<string, UserPromise>} */
 const USER_MAP = {}
 const NAME_ELEMENTS = {
     /** @type {HTMLCollectionOf<HTMLElement>} */
     profile: undefined,
     /** @type {HTMLCollectionOf<HTMLElement>} */
     tweets: undefined
+}
+
+class UserPromise {
+    isResolved = false
+    resolve(x) {
+        if (this.isResolved) return this
+        if (this.promise) this.promise.resolve(x)
+        else this.promise = Promise.resolve(x)
+        this.isResolved = true
+        return this
+    }
+    /** @returns {Promise<User>} */
+    get() {
+        if (this.promise) return this.promise
+        let {promise, resolve} = Promise.withResolvers()
+        promise.resolve = resolve
+        this.promise = promise
+        return promise
+    }
 }
 
 class RequestType {
@@ -105,15 +125,19 @@ function handleItem(item) {
  * @returns {User}
 */
 function mapUser(userData){
-    let user = userData.legacy.screen_name
-    if (user in USER_MAP) return
+    let name = userData.legacy.screen_name
+    let curUser = USER_MAP[name]
+    // Already mapped
+    if (curUser?.isResolved) return
     let id = userData.rest_id
     let hash = userData.id
-    return USER_MAP[user] = {
-        user,
+    let user = {
+        user: name,
         id,
         hash
     }
+    if (!curUser) USER_MAP[name] = new UserPromise().resolve(user)
+    else curUser.resolve(user)
 }
 
 /** Map relevant users from API tweet data. */
@@ -178,19 +202,19 @@ function trackTweetNames() {
 }
 
 /** Utility function to deal with special cases. */
-function processProfile() {
-    let user = findUserFromNameContainer(NAME_ELEMENTS.profile)
+async function processProfile() {
+    let user = await findUserFromNameContainer(NAME_ELEMENTS.profile)
     checkUser(user).then(data => markProfile(data))
 }
 
 /** Finds usernames in tweets and sends unprocessed ones for marking. */
-function processTweets() {
+async function processTweets() {
     //? Maybe try to link the tweet's rest_id from API?
     for (let element of NAME_ELEMENTS.tweets) {
         if (element.wtChecked) continue
-        var user = findUserFromNameContainer(element)
-        checkUser(user).then(data => markTweet(element, data))
         element.wtChecked = true
+        var user = await findUserFromNameContainer(element)
+        checkUser(user).then(data => markTweet(element, data))
     }
 }
 
@@ -249,9 +273,10 @@ function findUserFromNameContainer(element) {
     let username = nameEl.textContent.slice(1)
     let user = USER_MAP[username]
     if (!user) {
-        console.debug("Missing user ID:", username, element, nameEl)
+        // console.debug("Missing user ID:", username, element, nameEl)
+        USER_MAP[username] = user = new UserPromise()
     }
-    return user
+    return user.get()
 }
 
 // Communication //
@@ -273,10 +298,18 @@ function msgResponder(msg, sender, answer) {
     if (msg.action == "get-user") {
         let target = new URL(msg.targetLink)
         let username = target.pathname.split("/")[1]
-        answer({
-            user: USER_MAP[username],
-            platform: PLATFORM
+        let user = USER_MAP[username]
+        if (!user) {
+            answer(undefined)
+            return
+        }
+        user.get().then(user => {
+            answer({
+                user,
+                platform: PLATFORM
+            })
         })
+        return true
     }
 }
 
