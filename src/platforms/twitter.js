@@ -160,17 +160,9 @@ function mapFromTweetData(data){
  */
 function checkChanges(recordList, obs) {
     for (let record of recordList) {
-        //! Debug
-        // if (record.addedNodes.length == 1) console.log(record.target, record.addedNodes[0])
-        // else console.log(record.target, record.addedNodes)
-
-        // Profile container, first profile visit.
-        if (record.target.childNodes[1]?.dataset?.testid?.[4] == "N") {
-            processProfile()
-            return
-        }
         // Tweets container, every tweet load.
-        else if (record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) {
+        if (record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) {
+            processProfile() // Profile is always accompanied by tweets
             processTweets()
             return
         }
@@ -179,7 +171,10 @@ function checkChanges(recordList, obs) {
 
 /** Utility function to deal with special cases. */
 async function processProfile() {
-    let user = await findUserFromNameContainer(document.querySelector("[data-testid='UserName']"))
+    let nameEle = document.querySelector("[data-testid='UserName']")
+    let user = await findUserFromNameContainer(nameEle)
+    if (!user || user.user == nameEle.lastUser) return
+    nameEle.lastUser = user.user
     checkUser(user).then(data => markProfile(data))
 }
 
@@ -231,7 +226,7 @@ function markTweet(userEl, user) {
 
 /** @param {HTMLElement} element */
 function findNameElement(element) {
-    if (!element.dataset.testid?.startsWith("U")) return
+    if (!element || !element.dataset.testid?.startsWith("U")) return
     // Quote tweets and maybe others do not have links on name.
     // Name span can be split by <img> when name has emotes.
     let nameEl = Array.prototype.find.call(
