@@ -147,12 +147,12 @@ function mapFromTweetData(data){
     // let tweetId = data.rest_id
     mapUser(data.core.user_results.result)
     let secondaryTweetData = data.legacy.retweeted_status_result || data.quoted_status_result
-    if (secondaryTweetData) {
+    if (secondaryTweetData?.result) {
         mapFromTweetData(secondaryTweetData.result)
     }
-    let communityData = data.community_results?.result
-    if (communityData) {
-        for (var user of communityData.members_facepile_results) {
+    let communityData = data.community_results
+    if (communityData?.result) {
+        for (var user of communityData.result.members_facepile_results) {
             mapUser(user.result)
         }
     }
