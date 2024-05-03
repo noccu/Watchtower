@@ -1,4 +1,4 @@
-Watchtower is a browser extension that adds informational tags to users on internet platforms through subscription lists curated by the community.  
+Watchtower is a browser extension that adds informational tags to users on internet platforms through subscription lists curated by the community.
 Users are tracked by ID wherever possible. Watchtower works on all modern browsers.
 > **This project is still in pre-release and available for testing only.**
 
@@ -7,7 +7,8 @@ Users are tracked by ID wherever possible. Watchtower works on all modern browse
 
 # Install
 Currently, you need to enable developer mode and load the extension unpacked from folder.  
-You also require an up to date browser (early 2024) as the code relies on recent APIs.
+You also require an up to date browser (early 2024) as the code relies on recent APIs.  
+[Explanation of requested permissions](permissions.md).
 
 # Using
 1. Add any lists curated by people you trust from the options page.
@@ -20,6 +21,6 @@ You also require an up to date browser (early 2024) as the code relies on recent
 - See [developing](docs/developing.md) to contribute code.
 
 ## See also
-*Watchtower is not affiliated with these in any way*  
+*Watchtower is not affiliated with these in any way*
 - [uBlock Origin](https://ublockorigin.com/) - Community powered ad blocking.
 - [uBlacklist](https://iorate.github.io/ublacklist/) - Community powered search result blocking.
