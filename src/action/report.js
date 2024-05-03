@@ -18,9 +18,9 @@ async function loadReportableLists() {
 /** @param {CSUser} data */
 function updateReportData(data) {
     CUR_REPORT = data
-    let {name, ...ids} = data.user
-    document.getElementById("user-name").textContent = name
-    document.getElementById("user-data").textContent = JSON.stringify(ids, null, 2)
+    document.getElementById("user-platform").textContent = data.platform
+    document.getElementById("user-name").textContent = data.user.name
+    document.getElementById("user-data").textContent = JSON.stringify(data.user, null, 2)
 }
 
 function swListener(msg, sender, answer) {

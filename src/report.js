@@ -37,7 +37,7 @@ async function confirmReport(tab, user) {
             focused: true,
             url: POPUP_PATH,
             width: 360,
-            height: 250
+            height: 275
         })
     }
     // Because there's no way to wait until the page is fully loaded, apparently! Whee, hacks!
