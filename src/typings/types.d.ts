@@ -1,8 +1,8 @@
 /** A platform user part of a list. */
 interface User {
     /** Platform username/handle. Required. */
-    user: string
-    /** The main platform ID of the user. Used as lookup key. Required*/
+    name: string
+    /** The main platform ID of the user. Used as lookup key. */
     id: string
     /** [Twitter] Some kinda new id? Unsure, but saved in case. */
     hash?: string

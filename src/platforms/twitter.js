@@ -116,8 +116,9 @@ function mapUser(userData){
     if (curUser?.isResolved) return
     let id = userData.rest_id
     let hash = userData.id
+    /** @type {User} */
     let user = {
-        user: name,
+        name,
         id,
         hash
     }
@@ -162,8 +163,8 @@ function checkChanges(recordList, obs) {
 async function processProfile() {
     let nameEle = document.querySelector("[data-testid='UserName']")
     let user = await findUserFromNameContainer(nameEle)
-    if (!user || user.user == nameEle.lastUser) return
-    nameEle.lastUser = user.user
+    if (!user || user.name == nameEle.lastUser) return
+    nameEle.lastUser = user.name
     checkUser(user).then(data => markProfile(data))
 }
 

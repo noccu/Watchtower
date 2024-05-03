@@ -18,8 +18,8 @@ async function loadReportableLists() {
 /** @param {CSUser} data */
 function updateReportData(data) {
     CUR_REPORT = data
-    let {user, ...ids} = data.user
-    document.getElementById("user-name").textContent = user
+    let {name, ...ids} = data.user
+    document.getElementById("user-name").textContent = name
     document.getElementById("user-data").textContent = JSON.stringify(ids, null, 2)
 }
 
@@ -33,7 +33,7 @@ function report() {
     if (LIST_CHOICE.selectedIndex == -1) return
     /** @type {LoadedList} */
     let selectedList = LIST_CHOICE.options[LIST_CHOICE.selectedIndex].list
-    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user.user} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
+    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
 }
 
 function onLoad() {
