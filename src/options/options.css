@@ -17,6 +17,9 @@ section {
 }
 
 ul {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  width: fit-content;
   margin-block-start: 0.5em;
   padding-inline-start: 20px;
 }
@@ -26,7 +29,17 @@ ul {
 }
 
 .sub {
-  display: block;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: span 5;
+  column-gap: 1em;
+  align-items: center;
+  padding: 2px;
+  /* background-color: #ececec; */
+}
+
+.sub:not(:last-child) {
+  border-bottom: 1px dashed #808080;
 }
 
 .sub-state {
@@ -36,6 +49,8 @@ ul {
 
 .sub-url {
   font-size: 1.5em;
+  align-self: baseline;
+  text-decoration: none;
   /* color: var(--highlight); */
 }
 
