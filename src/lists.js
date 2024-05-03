@@ -119,8 +119,15 @@ async function updateLists() {
     console.log("Updating lists.")
     let savedLists = getConfig("lists")
     for (var idx = 0; idx < savedLists.length; idx++) {
-        try { savedLists[idx] = await downLoadList(savedLists[idx].local.source) }
-        catch { continue }
+        try {
+            let newList = await downLoadList(savedLists[idx].local.source)
+            savedLists[idx].meta = newList.meta
+            savedLists[idx].users = newList.users
+        }
+        catch {
+            console.warn(`Failed to update list: ${savedLists[idx].meta.name}`)
+            continue
+        }
     }
     saveConfig("lists")
 }
