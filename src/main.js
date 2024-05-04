@@ -1,5 +1,5 @@
 import { loadConfig, saveConfig } from "./config.js"
-import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists, checkListUpdates } from "./lists.js"
+import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists, checkListUpdates, updateList } from "./lists.js"
 import { reportTargets } from "./constants.js"
 import { reportUser, REPORT_PAGE_READY } from "./report.js"
 
@@ -24,6 +24,9 @@ function respond(msg, answer) {
             break
         case "add-list":
             addList(msg.url).then(answer)
+            break
+        case "upd-list":
+            updateList(msg.uid).then(answer)
             break
         case "del-list":
             removeList(msg.uid).then(answer)

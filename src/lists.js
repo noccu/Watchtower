@@ -21,6 +21,12 @@ class CachedList {
             writable: false
         })
     }
+    /** @param {List} newData */
+    update(newData) {
+        this.meta = this.full.meta = newData.meta
+        this.local = this.full.local = newData.local
+        this.full.users = newData.users
+    }
 }
 
 /** A {@link User} wrapper for most uses & serialization. Serializes to {@link SerializedUser} */
@@ -117,24 +123,30 @@ export async function addList(url) {
     return data
 }
 
-async function updateLists() {
-    console.log("Updating lists.")
-    let savedLists = getConfig("lists")
-    for (var idx = 0; idx < savedLists.length; idx++) {
-        try {
-            let newList = await downLoadList(savedLists[idx].local.source)
-            savedLists[idx].meta = newList.meta
-            savedLists[idx].users = newList.users
-        }
-        catch {
-            console.warn(`Failed to update list: ${savedLists[idx].meta.name}`)
-            continue
-        }
+/** Updates the raw, saved list of a LoadedList in-place.
+ * @param {CachedList} list */
+async function updateRawList(list) {
+    console.log(`Updating list: ${list.meta.name}`)
+    try {
+        var newList = await downLoadList(list.local.source)
+        list.update(newList)
+    }
+    catch {
+        console.warn(`Failed to update list: ${list.meta.name}`)
+        return
+    }
+    return newList
+}
+
+function updateAllLists() {
+    console.log("Started updating all lists.")
+    for (var list of LISTS) {
+        updateRawList(list)
     }
     saveConfig("lists")
 }
 
-export async function checkListUpdates() {
+export function checkListUpdates() {
     console.debug("Checking list updates.")
     let set = getConfig("settings")
     let now = Date.now()
@@ -142,8 +154,17 @@ export async function checkListUpdates() {
         console.debug("Updates required.")
         changeSetting("lastUpdate", now)
         saveConfig("settings")
-        return updateLists()
+        return updateAllLists()
     }
+    return Promise.resolve()
+}
+
+/** Update a list by source URL/UID */
+export async function updateList(src) {
+    let list = getListBySource(src)
+    await updateRawList(list)
+    markConfigChanged()
+    return list
 }
 
 /** Remove a list by source URL/UID */

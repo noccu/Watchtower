@@ -20,26 +20,49 @@ function fetchNewList(ev) {
 }
 
 /** @param {MouseEvent} ev */
-function deleteList(ev) {
-    if (!ev.target.uid) return
+function onListAction(ev) {
+    if (!ev.target.parentElement.uid) return
+    if (ev.target.value == "upd") updateList(ev.target.parentElement)
+    else if (ev.target.value == "del") deleteList(ev.target.parentElement)
+}
+
+function deleteList(subEle) {
     chrome.runtime.sendMessage({
         action: "del-list",
-        uid: ev.target.uid
+        uid: subEle.uid
     }).then(isDeleted => {
         if (!isDeleted) return
-        ev.target.parentElement.remove()
+        subEle.remove()
         TOTAL_SUBS -= 1
         getId("subLen").textContent = TOTAL_SUBS
     })
 }
 
+function updateList(subEle) {
+    chrome.runtime.sendMessage({
+        action: "upd-list",
+        uid: subEle.uid
+    }).then(updatedData => {
+        if (!updatedData) return
+        uiSetListData(subEle, updatedData)
+    })
+}
+
+/** 
+ * @param {HTMLElement} ele 
+ * @param {SerializedList} data 
+ */
+function uiSetListData(ele, data) {
+    ele.querySelector(".sub-name").textContent = data.meta.name
+    ele.querySelector(".sub-url").href = data.meta.homepage || data.local.source
+    ele.querySelector(".sub-num span").textContent = data.local.size
+    ele.uid = data.local.source
+}
+
 /** @param {SerializedList} data */
 function uiAddList(data) {
     let t_sub = getId("t_sub").content.cloneNode(true)
-    t_sub.querySelector(".sub-name").textContent = data.meta.name
-    t_sub.querySelector(".sub-url").href = data.meta.homepage
-    t_sub.querySelector(".sub-num span").textContent = data.local.size
-    t_sub.querySelector(".sub-del").uid = data.local.source
+    uiSetListData(t_sub.firstElementChild, data)
     getId("subList").append(t_sub)
     TOTAL_SUBS += 1
     getId("subLen").textContent = TOTAL_SUBS
@@ -57,7 +80,7 @@ function getId(id) {
 
 // UI User actions
 function onOptionsOpened() {
-    getId("subscriptions").addEventListener("click", deleteList)
+    getId("subscriptions").addEventListener("click", onListAction)
     getId("new-list").addEventListener("keyup", fetchNewList)
     // getId("save").addEventListener('click', saveOptions)
     chrome.runtime.sendMessage({action: "get-cfg"}).then(cfg => {
