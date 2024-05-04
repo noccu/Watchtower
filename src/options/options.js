@@ -3,10 +3,13 @@ var TOTAL_SUBS = 0
 // UI background
 function fetchNewList(ev) {
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
-    // ev.preventDefault()
+    let location = ev.target.value
+    if (!location.startsWith("http")) {
+        location = `file://${location}`
+    }
     chrome.runtime.sendMessage({
         action: "add-list",
-        url: ev.target.value
+        url: location
     }).then(data => {
         if (!data) return
         // Really dislike JS type handling
