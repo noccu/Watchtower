@@ -2,32 +2,34 @@ import { changeSetting, getConfig, markConfigChanged, saveConfig } from "./confi
 import { PLATFORMS } from "./constants.js"
 
 /** Pointers to loaded list data, users excluded.
- * @type {LoadedList[]} */
+ * @type {CachedList[]} */
 const LISTS = []
 /** Stores user index
-* @type {PlatformKeyed<Object<string, LoadedUser>>}} */
+* @type {PlatformKeyed<Object<string, CachedUser>>}} */
 const USERS = {}
 
-/** Known as LoadedList in docs. */
+/** A {@link List} wrapper for most uses & serialization. Serializes to {@link SerializedList}. */
 class CachedList {
     /** @param {List} list */
     constructor(list) {
         this.meta = list.meta
         this.local = list.local
+        /** Link to full list as originally loaded from storage. Not serialized. @readonly */
+        this.full = list
         Object.defineProperty(this, "full", {
             enumerable: false,
-            writable: false,
-            value: list
+            writable: false
         })
     }
 }
 
-/** Known as LoadedUser in docs. */
+/** A {@link User} wrapper for most uses & serialization. Serializes to {@link SerializedUser} */
 class CachedUser {
     /** @param {User} user */
     constructor(user) {
         this.user = user
-        // /** @type {LoadedList[]} */
+        /** Contains refs to lists the user is on.
+        * @type {CachedList[]} */
         this.onLists = []
     }
 }
@@ -56,13 +58,13 @@ function loadSingleList(listData) {
 
 /** Indexes users from all platforms for quicker lookup.
  * The index is stored in the global var USERS.
- * @param {LoadedList} list
+ * @param {CachedList} list
 */
 function indexUsers(list) {
     for (var [plat, platUsers] of Object.entries(list.full.users)) {
         for (var user of platUsers) {
             // Link user to list.
-            /** @type {LoadedUser} */
+            /** @type {CachedUser} */
             let loadedUser = USERS[plat][user.id] || new CachedUser(user)
             loadedUser.onLists.push(list)
             USERS[plat][user.id] = loadedUser

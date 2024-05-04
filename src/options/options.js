@@ -33,7 +33,7 @@ function deleteList(ev) {
     })
 }
 
-/** @param {LoadedList} data */
+/** @param {SerializedList} data */
 function uiAddList(data) {
     let t_sub = getId("t_sub").content.cloneNode(true)
     t_sub.querySelector(".sub-name").textContent = data.meta.name

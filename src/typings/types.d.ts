@@ -15,11 +15,11 @@ interface CSUser {
     platform: PLATFORM
 }
 
-/** A user cached for fast lookup. Implemented by CachedUser class. */
-interface LoadedUser {
+/** A serialized version of the {@link CachedUser} class. */
+interface SerializedUser {
     user: User
     /** Contains refs to lists the user is on. */
-    onLists: LoadedList[]
+    onLists: SerializedList[]
 }
 
 /** A list's metadata schema, holding all public info. */
@@ -64,11 +64,8 @@ interface List {
     users: PlatformKeyed<User[]>
 }
 
-/** A List wrapper for most uses & serialization. Implemented by CachedList class. */
-interface LoadedList extends Omit<List, "users">{
-    /** Link to full list as originally loaded from storage. Non-enumerable. */
-    readonly full: List
-}
+/** A serialized version of the {@link CachedList} class. */
+type SerializedList = Omit<List, "users">
 
 type PLATFORMS = {
     twitter,

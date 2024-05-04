@@ -24,7 +24,7 @@ class UserPromise {
         this.isResolved = true
         return this
     }
-    /** @returns {Promise<User>} */
+    /** @returns {Promise<SerializedUser>} */
     get() {
         if (this.promise) return this.promise
         let {promise, resolve} = Promise.withResolvers()
@@ -179,7 +179,7 @@ async function processTweets() {
     }
 }
 
-/** @param {LoadedUser} user */
+/** @param {SerializedUser} user */
 function markProfile(user) {
     // Clear existing lists as Twitter edits profile info in-place.
     document.getElementById(MESSAGE_CONTAINER.id)?.remove()
@@ -197,7 +197,7 @@ function markProfile(user) {
 
 /**
  * @param {HTMLElement} userEl
- * @param {LoadedUser} user
+ * @param {SerializedUser} user
 */
 function markTweet(userEl, user) {
     if (!user) return
@@ -245,7 +245,7 @@ function findUserFromNameContainer(element) {
 
 // Communication //
 
-/** @returns {Promise<LoadedUser>} */
+/** @returns {Promise<SerializedUser>} */
 function checkUser(user) {
     console.debug("Checking user:", user)
     if (!user) return Promise.resolve()

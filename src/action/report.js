@@ -4,7 +4,7 @@ const LIST_CHOICE = document.getElementById("lists")
 var CUR_REPORT
 
 async function loadReportableLists() {
-    /** @type {LoadedList[]} */
+    /** @type {SerializedList[]} */
     let lists = await chrome.runtime.sendMessage({action: "get-report-lists"})
     for (let list of lists) {
         let option = document.createElement("option")
@@ -31,7 +31,7 @@ function swListener(msg, sender, answer) {
 
 function report() {
     if (LIST_CHOICE.selectedIndex == -1) return
-    /** @type {LoadedList} */
+    /** @type {SerializedList} */
     let selectedList = LIST_CHOICE.options[LIST_CHOICE.selectedIndex].list
     console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
 }
