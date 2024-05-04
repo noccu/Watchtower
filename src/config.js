@@ -16,7 +16,7 @@ export async function loadConfig() {
 /** @param {keyof Config} key */
 export function saveConfig(key = undefined) {
     if (!CONFIG_CHANGED) return
-    console.log("Saving config")
+    console.debug("Saving config")
     if (key) {
         chrome.storage.local.set({[key]: CONFIG[key]})
     }
