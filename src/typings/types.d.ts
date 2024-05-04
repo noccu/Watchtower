@@ -10,7 +10,7 @@ interface User {
 
 /** The object format returned by content script msg replies. */
 interface CSUser {
-    user: User
+    user: SerializedUser
     /** Platform the user belongs to. */
     platform: PLATFORM
 }
