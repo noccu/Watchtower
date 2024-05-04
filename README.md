@@ -8,7 +8,7 @@ Users are tracked by ID wherever possible. Watchtower works on all modern browse
 # Install
 Currently, you need to enable developer mode and load the extension unpacked from folder.  
 You also require an up to date browser (early 2024) as the code relies on recent APIs.  
-[Explanation of requested permissions](permissions.md).
+[Explanation of requested permissions](docs/permissions.md).
 
 # Using
 1. Add any lists curated by people you trust from the options page.
