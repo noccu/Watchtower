@@ -8,18 +8,17 @@ interface User {
     hash?: string
 }
 
-/** The object format returned by content script msg replies. */
-interface CSUser {
-    user: SerializedUser
-    /** Platform the user belongs to. */
-    platform: PLATFORM
-}
-
 /** A serialized version of the {@link CachedUser} class. */
 interface SerializedUser {
     user: User
     /** Contains refs to lists the user is on. */
     onLists: SerializedList[]
+}
+
+/** The object format returned by content script msg replies. */
+interface CSUser extends User {
+    /** Platform the user belongs to. */
+    platform: PLATFORM
 }
 
 /** A list's metadata schema, holding all public info. */

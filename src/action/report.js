@@ -15,12 +15,12 @@ async function loadReportableLists() {
     }
 }
 
-/** @param {CSUser} data */
-function updateReportData(data) {
-    CUR_REPORT = data
-    document.getElementById("user-platform").textContent = data.platform
-    document.getElementById("user-name").textContent = data.user.name
-    document.getElementById("user-data").textContent = JSON.stringify(data.user, null, 2)
+/** @param {CSUser} user */
+function updateReportData(user) {
+    CUR_REPORT = user
+    document.getElementById("user-platform").textContent = user.platform
+    document.getElementById("user-name").textContent = user.name
+    document.getElementById("user-data").textContent = JSON.stringify(user, null, 2)
 }
 
 function swListener(msg, sender, answer) {

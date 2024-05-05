@@ -24,7 +24,7 @@ class UserPromise {
         this.isResolved = true
         return this
     }
-    /** @returns {Promise<SerializedUser>} */
+    /** @returns {Promise<User>} */
     get() {
         if (this.promise) return this.promise
         let {promise, resolve} = Promise.withResolvers()
@@ -245,7 +245,9 @@ function findUserFromNameContainer(element) {
 
 // Communication //
 
-/** @returns {Promise<SerializedUser>} */
+/**
+ * @param {User} user
+ * @returns {Promise<SerializedUser>} */
 function checkUser(user) {
     console.debug("Checking user:", user)
     if (!user) return Promise.resolve()
@@ -269,7 +271,7 @@ function msgResponder(msg, sender, answer) {
         }
         user.get().then(user => {
             answer({
-                user,
+                ...user,
                 platform: PLATFORM
             })
         })
