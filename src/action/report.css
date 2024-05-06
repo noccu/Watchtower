@@ -2,8 +2,12 @@ body {
     font-size: 1rem;
 }
 
-section.user > div {
+section, section > * {
     margin-bottom: 0.25em;
+}
+
+.center {
+    text-align: center;
 }
 
 #user-name {
@@ -18,13 +22,17 @@ section.user > div {
     white-space: pre-wrap;
 }
 
-
-section.report-btn {
-    text-align: center;
-    margin: 1em;
+#options {
+    display: flex;
+    flex-wrap: wrap;
+    /* display: grid;
+    grid-template-columns: 1fr 1fr; */
+    gap: 0.25em 0.5em;
+    font-size: 0.75em;
 }
 
 #report {
+    margin: 1rem;
     font-size: 1.3em;
     background-color: #ff6a6a;
 }

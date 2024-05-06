@@ -10,7 +10,7 @@
 <body>
     <section class="user">
         <div>
-            Report <span id="user-platform"></span> user: @<span id="user-name">DoNotReport</span>
+            Report <span id="user-platform"></span> user: <span id="user-name">DoNotReport</span>
         </div>
         <div id="user-data">
             Do not report to list if no data displays here.
@@ -18,12 +18,16 @@
         </div>
     </section>
     <section>
-        To the following list:
-        <select id="lists">
-        </select>
+        To the following list: <select id="lists"></select>
     </section>
-    <section class="report-btn">
-        <button id="report">Report</button>
+    <section>
+        <div id="options">
+            <label><input class="option" type="checkbox" value="localOnly"/>Local only</label>
+            <label><input class="option" type="checkbox" value="appeal"/>Request removal</label>
+        </div>
+        <div class="center">
+            <button id="report">Report</button>
+        </div>
     </section>
 </body>
 

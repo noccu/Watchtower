@@ -84,3 +84,10 @@ interface Config {
     /** The saved lists, as downloaded + extra metadata  */
     lists: List[]
 }
+
+interface ReportOptions {
+    /** Only save to list's report block, do not send data. */
+    localOnly: boolean
+    /** Request review to remove user from list. */
+    appeal: boolean
+}
