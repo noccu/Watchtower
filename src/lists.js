@@ -93,7 +93,8 @@ function loadSingleList(listData) {
  * @param {CachedList} list
 */
 function indexUsers(list) {
-    for (var [plat, platUsers] of Object.entries(list.full.users)) {
+    const allUsers = Object.entries(list.full.users).concat(Object.entries(list.reports))
+    for (var [plat, platUsers] of allUsers) {
         for (var user of platUsers) {
             indexSingleUser(plat, user, list).addToList(list)
         }
