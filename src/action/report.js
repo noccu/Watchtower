@@ -9,7 +9,6 @@ async function loadReportableLists() {
     for (let list of lists) {
         let option = document.createElement("option")
         option.text = list.meta.name
-        option.value = list.meta.source
         option.list = list
         LIST_CHOICE.add(option)
     }
@@ -33,7 +32,20 @@ function report() {
     if (LIST_CHOICE.selectedIndex == -1) return
     /** @type {SerializedList} */
     let selectedList = LIST_CHOICE.options[LIST_CHOICE.selectedIndex].list
-    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.user.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
+    let options = {}
+    for (var opt of document.querySelectorAll(".option")) {
+        if (opt.type == "checkbox") {
+            options[opt.value] = opt.checked
+        }
+        // Other option types
+    }
+    console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
+    chrome.runtime.sendMessage({
+        action:"send-report",
+        options,
+        user: CUR_REPORT,
+        list: selectedList
+    })
 }
 
 function onLoad() {

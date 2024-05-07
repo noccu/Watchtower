@@ -1,3 +1,6 @@
+import { getListBySource } from "./lists.js"
+import { markConfigChanged, saveConfig } from "./config.js"
+
 const POPUP_PATH = "src/action/report.html"
 export var REPORT_PAGE_READY
 
@@ -40,7 +43,7 @@ async function openReportDetails(tab, user) {
             focused: true,
             url: POPUP_PATH,
             width: 360,
-            height: 275
+            height: 325
         })
     }
     await REPORT_PAGE_READY.promise
@@ -48,4 +51,17 @@ async function openReportDetails(tab, user) {
         action: "set-report",
         user
     })
+}
+
+/** @param {{options: ReportOptions, user: CSUser, list: SerializedList}} */
+export function finishReport({options, user, list}) {
+    if (!options.appeal) {
+        let reportAdded = getListBySource(list.local.source).addReport(user)
+        if (reportAdded) {
+            markConfigChanged()
+            saveConfig("lists")
+        }
+    }
+    if (options.localOnly) return
+    //todo: Send data
 }

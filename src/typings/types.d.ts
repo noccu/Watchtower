@@ -55,12 +55,14 @@ interface LocalListData {
 
 /** Defines the full internal schema of a saved list. */
 interface List {
-    /** The list's metadata */
+    /** The list's metadata. */
     meta: ListMeta
-    /** Data added locally for various reasons */
-    local: LocalListData
     /** Users on the list, split by platform. */
     users: PlatformKeyed<User[]>
+    /** Data added locally for various reasons. */
+    local: LocalListData
+    /** Local storage for reports. */
+    reports: PlatformKeyed<User[]>
 }
 
 /** A serialized version of the {@link CachedList} class. */
