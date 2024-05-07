@@ -35,8 +35,18 @@ class CachedUser {
     constructor(user) {
         this.user = user
         /** Contains refs to lists the user is on.
-        * @type {CachedList[]} */
+         * @type {CachedList[]} */
         this.onLists = []
+    }
+    /** @param {CachedList} list */
+    isOnList(list) {
+        return this.onLists.includes(list)
+    }
+    /** @param {CachedList} list */
+    addToList(list) {
+        if (this.isOnList(list)) return false
+        this.onLists.push(list)
+        return true
     }
 }
 
