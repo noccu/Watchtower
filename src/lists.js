@@ -79,13 +79,22 @@ function loadSingleList(listData) {
 function indexUsers(list) {
     for (var [plat, platUsers] of Object.entries(list.full.users)) {
         for (var user of platUsers) {
-            // Link user to list.
-            /** @type {CachedUser} */
-            let loadedUser = USERS[plat][user.id] || new CachedUser(user)
-            loadedUser.onLists.push(list)
-            USERS[plat][user.id] = loadedUser
+            indexSingleUser(plat, user, list).addToList(list)
         }
     }
+}
+
+/** Add a user to the index if new.
+ * @param {PLATFORM} plat
+ * @param {User} user
+*/
+function indexSingleUser(plat, user) {
+    let loadedUser = lookupUser(plat, user)
+    if (!loadedUser) {
+        loadedUser = new CachedUser(user)   
+        USERS[plat][user.id] = loadedUser
+    } 
+    return loadedUser
 }
 
 /**
