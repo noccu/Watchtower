@@ -20,6 +20,7 @@ function updateReportData(user) {
     document.getElementById("user-platform").textContent = user.platform
     document.getElementById("user-name").textContent = user.name
     document.getElementById("user-data").textContent = JSON.stringify(user, null, 2)
+    // sizeToFit()
 }
 
 function swListener(msg, sender, answer) {
@@ -46,6 +47,15 @@ function report() {
         user: CUR_REPORT,
         list: selectedList
     })
+}
+
+function sizeToFit() {
+    let xdelta = window.outerWidth - window.innerWidth
+    let ydelta = window.outerHeight - window.innerHeight
+    window.resizeTo(
+        document.documentElement.offsetWidth + xdelta,
+        document.documentElement.offsetHeight + ydelta
+    )
 }
 
 function onLoad() {
