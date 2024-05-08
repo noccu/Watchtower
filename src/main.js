@@ -1,12 +1,12 @@
 import { loadConfig, saveConfig } from "./config.js"
 import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists, checkListUpdates, updateList } from "./lists.js"
 import { reportTargets } from "./constants.js"
-import { reportUser, REPORT_PAGE_READY, finishReport } from "./report.js"
+import { startReport, REPORT_PAGE_READY, finishReport } from "./report.js"
 
 // Messaging
 //todo: Use promises/async once Chrome supports it for extension messaging.
 //todo: alternatively, just use a basic keep-alive.
-chrome.runtime.onMessage.addListener((msg, sender, answer) => {
+chrome.runtime.onMessage.addListener((msg, _sender, answer) => {
     console.debug("Received:", msg)
     READY.then(() => respond(msg, answer))
     // Expect async answer
@@ -74,7 +74,7 @@ chrome.contextMenus.create(
     },
     () => {
         if (!chrome.runtime.lastError) {
-            chrome.contextMenus.onClicked.addListener(reportUser)
+            chrome.contextMenus.onClicked.addListener(startReport)
         }
     }
 )

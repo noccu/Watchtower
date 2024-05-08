@@ -11,16 +11,16 @@ export default [
   },
   {
     rules: {
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "no-unused-vars": ["warn", { args: "all", argsIgnorePattern: "^_" }],
       "require-await": ["warn"],
-      "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
-      "no-use-before-define": ["error", { "functions": false }],
+      "func-style": ["error", "declaration", { allowArrowFunctions: true }],
+      "no-use-before-define": ["error", { functions: false }],
       // "prefer-const": ["warn"],
       // "no-magic-numbers": ["warn", { "ignore": [-1, 0, 1] }],
       // "block-scoped-var": ["warn"],
       // "consistent-return": ["warn"],
-      "one-var": ["warn", { "uninitialized": "consecutive" }],
-      "no-shadow": ["warn", { "builtinGlobals": true }]
+      "one-var": ["warn", { uninitialized: "consecutive" }],
+      "no-shadow": ["warn", { builtinGlobals: true }]
     }
   }
 ];

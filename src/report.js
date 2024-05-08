@@ -6,13 +6,13 @@ export var REPORT_PAGE_READY
 
 /** Called on context menu report click
  * @param {chrome.contextMenus.OnClickData} data */
-export async function reportUser(data, tab) {
+export async function startReport(data, tab) {
     if (data.menuItemId != "wt-report") return
     let csUser = await getReportData(tab, data.linkUrl)
     let user = lookupUser(csUser)
-    let reportUser = {...csUser, platform: user.platform }
-    console.debug("Reporting user:", reportUser, data)
-    openReportDetails(tab, reportUser)
+    let rUser = {...csUser, platform: user.platform }
+    console.debug("Reporting user:", rUser, data)
+    openReportDetails(tab, rUser)
 }
 
 /**
@@ -28,10 +28,10 @@ function getReportData(tab, targetLink) {
 }
 
 /**
- * @param {chrome.tabs.Tab} tab
+ * @param {chrome.tabs.Tab} _tab
  * @param {ReportUser} user
 */
-async function openReportDetails(tab, user) {
+async function openReportDetails(_tab, user) {
     // Because there's no way to wait until the page is fully loaded, apparently! Whee, hacks!
     REPORT_PAGE_READY = Promise.withResolvers()
     // Not available in Chrome in most normal cases. It's been years.
