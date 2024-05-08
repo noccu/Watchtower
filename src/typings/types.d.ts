@@ -21,6 +21,9 @@ interface CSUser extends User {
     platform: PLATFORM
 }
 
+/** The object format used for reporting. */
+type ReportUser = CSUser & SerializedUser
+
 /** A list's metadata schema, holding all public info. */
 interface ListMeta {
     /** List name. */

@@ -14,7 +14,7 @@ async function loadReportableLists() {
     }
 }
 
-/** @param {CSUser} user */
+/** @param {ReportUser} user */
 function updateReportData(user) {
     CUR_REPORT = user
     document.getElementById("user-platform").textContent = user.platform
