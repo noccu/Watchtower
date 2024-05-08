@@ -148,7 +148,7 @@ function mapFromTweetData(data){
  * @param {MutationRecord[]} recordList
  * @param {MutationObserver} obs
  */
-function checkChanges(recordList, obs) {
+function checkChanges(recordList, _obs) {
     for (let record of recordList) {
         // Tweets container, every tweet load.
         if (record.target.childNodes[0]?.dataset?.testid?.startsWith("cell")) {
@@ -282,7 +282,7 @@ function msgResponder(msg, sender, answer) {
 function onLoad() {
     globalThis.addEventListener("wt-xhr", parseResponse)
     chrome.runtime.onMessage.addListener(msgResponder)
-    window.addEventListener("DOMContentLoaded", e => {
+    window.addEventListener("DOMContentLoaded", () => {
         let tweetObserver = new MutationObserver(checkChanges)
         tweetObserver.observe(
             // document.querySelector("div[aria-label='Home timeline']"),

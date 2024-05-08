@@ -23,13 +23,14 @@ function respond(msg, answer) {
             answer(lookupUser(msg.platform, msg.user))
             break
         case "add-list":
-            addList(msg.url).then(answer)
+            addList(msg.uri).then(answer)
             break
         case "upd-list":
             updateList(msg.uid).then(answer)
             break
         case "del-list":
-            removeList(msg.uid).then(answer)
+            removeList(msg.uid)
+            answer()
             break
         case "get-cfg":
             loadConfig().then(cfg => {

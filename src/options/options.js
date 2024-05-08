@@ -3,13 +3,13 @@ var TOTAL_SUBS = 0
 // UI background
 function fetchNewList(ev) {
     if (ev.key != "Enter" || !ev.target.checkValidity()) return
-    let location = ev.target.value
-    if (!location.startsWith("http")) {
-        location = `file://${location}`
+    let uri = ev.target.value
+    if (!uri.startsWith("http")) {
+        uri = `file://${uri}`
     }
     chrome.runtime.sendMessage({
         action: "add-list",
-        url: location
+        uri
     }).then(data => {
         if (!data) return
         // Really dislike JS type handling
@@ -51,9 +51,9 @@ function updateList(subEle) {
     })
 }
 
-/** 
- * @param {HTMLElement} ele 
- * @param {SerializedList} data 
+/**
+ * @param {HTMLElement} ele
+ * @param {SerializedList} data
  */
 function uiSetListData(ele, data) {
     ele.querySelector(".sub-name").textContent = data.meta.name

@@ -23,7 +23,7 @@ function updateReportData(user) {
     document.getElementById("user-data").textContent = JSON.stringify(user, null, 2)
 }
 
-function swListener(msg, sender, answer) {
+function swListener(msg, _sender, _answer) {
     if (msg.action == "set-report") {
         updateReportData(msg.user)
     }

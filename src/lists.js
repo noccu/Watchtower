@@ -5,7 +5,7 @@ import { PLATFORMS } from "./constants.js"
  * @type {CachedList[]} */
 const LISTS = []
 /** Stores user index
-* @type {PlatformKeyed<Object<string, CachedUser>>}} */
+ * @type {PlatformKeyed<Object<string, CachedUser>>}} */
 const USERS = {}
 
 /** A {@link List} wrapper for most uses & serialization. Serializes to {@link SerializedList}. */
@@ -44,7 +44,7 @@ class CachedUser {
 /** Initializes stored lists for use
  * @param {List[]} lists
 */
-export async function loadLists(lists) {
+export function loadLists(lists) {
     LISTS.length = 0
     // Set up the per-platform cache
     for (var plat in PLATFORMS) {
@@ -168,7 +168,7 @@ export async function updateList(src) {
 }
 
 /** Remove a list by source URL/UID */
-export async function removeList(src) {
+export function removeList(src) {
     console.debug("Delete list requested:", src)
     let list = getListBySource(src)
     if (!list) {

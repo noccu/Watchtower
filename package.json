@@ -1,0 +1,20 @@
+{
+  "name": "watchtower",
+  "version": "1.0.0",
+  "description": "Dynamic user-curated tag lists for internet platforms.",
+  "main": "src/main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "noccu",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.2.0",
+    "eslint": "^9.2.0",
+    "globals": "^15.1.0"
+  }
+}
