@@ -1,3 +1,6 @@
+import { getListBySource, lookupUser } from "./lists.js"
+import { markConfigChanged, saveConfig } from "./config.js"
+
 const POPUP_PATH = "src/action/report.html"
 export var REPORT_PAGE_READY
 
@@ -5,9 +8,11 @@ export var REPORT_PAGE_READY
  * @param {chrome.contextMenus.OnClickData} data */
 export async function reportUser(data, tab) {
     if (data.menuItemId != "wt-report") return
-    let user = await getReportData(tab, data.linkUrl)
-    console.debug("Reporting user:", user, data)
-    openReportDetails(tab, user)
+    let csUser = await getReportData(tab, data.linkUrl)
+    let user = lookupUser(csUser)
+    let reportUser = {...csUser, platform: user.platform }
+    console.debug("Reporting user:", reportUser, data)
+    openReportDetails(tab, reportUser)
 }
 
 /**
@@ -24,7 +29,7 @@ function getReportData(tab, targetLink) {
 
 /**
  * @param {chrome.tabs.Tab} tab
- * @param {CSUser} user
+ * @param {ReportUser} user
 */
 async function openReportDetails(tab, user) {
     // Because there's no way to wait until the page is fully loaded, apparently! Whee, hacks!
@@ -40,7 +45,7 @@ async function openReportDetails(tab, user) {
             focused: true,
             url: POPUP_PATH,
             width: 360,
-            height: 275
+            height: 325
         })
     }
     await REPORT_PAGE_READY.promise
@@ -48,4 +53,17 @@ async function openReportDetails(tab, user) {
         action: "set-report",
         user
     })
+}
+
+/** @param {{options: ReportOptions, user: CSUser, list: SerializedList}} */
+export function finishReport({options, user, list}) {
+    if (!options.appeal) {
+        let reportAdded = getListBySource(list.local.source).addReport(user)
+        if (reportAdded) {
+            markConfigChanged()
+            saveConfig("lists")
+        }
+    }
+    if (options.localOnly) return
+    //todo: Send data
 }

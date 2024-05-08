@@ -14,6 +14,7 @@ class CachedList {
     constructor(list) {
         this.meta = list.meta
         this.local = list.local
+        this.reports = list.reports
         /** Link to full list as originally loaded from storage. Not serialized. @readonly */
         this.full = list
         Object.defineProperty(this, "full", {
@@ -25,7 +26,22 @@ class CachedList {
     update(newData) {
         this.meta = this.full.meta = newData.meta
         this.local = this.full.local = newData.local
+        this.reports = this.full.reports = newData.reports
         this.full.users = newData.users
+    }
+    /**  @param {CSUser} csUser */
+    addReport(csUser) {
+        let {platform, ...user} = csUser
+        // Global cache
+        let loadedUser = indexSingleUser(platform, user, this)
+        if (loadedUser.isOnList(this)) return false
+        loadedUser.addToList(this)
+        // Report data
+        if (!this.reports[platform]) {
+            this.reports[platform] = []
+        }
+        this.reports[platform].push(user)
+        return true
     }
 }
 
@@ -35,8 +51,18 @@ class CachedUser {
     constructor(user) {
         this.user = user
         /** Contains refs to lists the user is on.
-        * @type {CachedList[]} */
+         * @type {CachedList[]} */
         this.onLists = []
+    }
+    /** @param {CachedList} list */
+    isOnList(list) {
+        return this.onLists.includes(list)
+    }
+    /** @param {CachedList} list */
+    addToList(list) {
+        if (this.isOnList(list)) return false
+        this.onLists.push(list)
+        return true
     }
 }
 
@@ -67,15 +93,25 @@ function loadSingleList(listData) {
  * @param {CachedList} list
 */
 function indexUsers(list) {
-    for (var [plat, platUsers] of Object.entries(list.full.users)) {
+    const allUsers = Object.entries(list.full.users).concat(Object.entries(list.reports))
+    for (var [plat, platUsers] of allUsers) {
         for (var user of platUsers) {
-            // Link user to list.
-            /** @type {CachedUser} */
-            let loadedUser = USERS[plat][user.id] || new CachedUser(user)
-            loadedUser.onLists.push(list)
-            USERS[plat][user.id] = loadedUser
+            indexSingleUser(plat, user, list).addToList(list)
         }
     }
+}
+
+/** Add a user to the index if new.
+ * @param {PLATFORM} plat
+ * @param {User} user
+*/
+function indexSingleUser(plat, user) {
+    let loadedUser = lookupUser(plat, user)
+    if (!loadedUser) {
+        loadedUser = new CachedUser(user)
+        USERS[plat][user.id] = loadedUser
+    }
+    return loadedUser
 }
 
 /**
@@ -94,7 +130,7 @@ export function getPlatformList(plat) {
     return USERS[plat]
 }
 
-function getListBySource(src) {
+export function getListBySource(src) {
     return LISTS.find(l => l.local.source == src)
 }
 
@@ -216,6 +252,8 @@ async function downLoadList(url) {
         source: url,
         size: Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
     }
+    // Add the object to store reports in locally
+    data.reports = {}
 
     console.log("List fetched")
     return data

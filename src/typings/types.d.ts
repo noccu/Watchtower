@@ -21,6 +21,9 @@ interface CSUser extends User {
     platform: PLATFORM
 }
 
+/** The object format used for reporting. */
+type ReportUser = CSUser & SerializedUser
+
 /** A list's metadata schema, holding all public info. */
 interface ListMeta {
     /** List name. */
@@ -55,12 +58,14 @@ interface LocalListData {
 
 /** Defines the full internal schema of a saved list. */
 interface List {
-    /** The list's metadata */
+    /** The list's metadata. */
     meta: ListMeta
-    /** Data added locally for various reasons */
-    local: LocalListData
     /** Users on the list, split by platform. */
     users: PlatformKeyed<User[]>
+    /** Data added locally for various reasons. */
+    local: LocalListData
+    /** Local storage for reports. */
+    reports: PlatformKeyed<User[]>
 }
 
 /** A serialized version of the {@link CachedList} class. */
@@ -83,4 +88,11 @@ interface Config {
     settings: Settings
     /** The saved lists, as downloaded + extra metadata  */
     lists: List[]
+}
+
+interface ReportOptions {
+    /** Only save to list's report block, do not send data. */
+    localOnly: boolean
+    /** Request review to remove user from list. */
+    appeal: boolean
 }

@@ -1,7 +1,7 @@
 import { loadConfig, saveConfig } from "./config.js"
 import { loadLists, lookupUser, getPlatformList, addList, removeList, getReportableLists, getLists, checkListUpdates, updateList } from "./lists.js"
 import { reportTargets } from "./constants.js"
-import { reportUser, REPORT_PAGE_READY } from "./report.js"
+import { reportUser, REPORT_PAGE_READY, finishReport } from "./report.js"
 
 // Messaging
 //todo: Use promises/async once Chrome supports it for extension messaging.
@@ -51,6 +51,11 @@ function respond(msg, answer) {
             REPORT_PAGE_READY.resolve()
             answer() // Quiet msg conn error due to async reply
             break
+        case "send-report":
+            finishReport(msg)
+            answer()
+            break
+            //todo: Actually report
     }
 }
 
