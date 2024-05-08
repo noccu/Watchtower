@@ -25,8 +25,14 @@ function fetchNewList(ev) {
 /** @param {MouseEvent} ev */
 function onListAction(ev) {
     if (!ev.target.parentElement.uid) return
-    if (ev.target.value == "upd") updateList(ev.target.parentElement)
-    else if (ev.target.value == "del") deleteList(ev.target.parentElement)
+    switch(ev.target.value) {
+        case "upd":
+            updateList(ev.target.parentElement)
+            break
+        case "del":
+            deleteList(ev.target.parentElement)
+            break
+    }
 }
 
 function deleteList(subEle) {
