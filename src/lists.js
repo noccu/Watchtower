@@ -218,6 +218,9 @@ export function exportList(src, options) {
             }
         }
     }
+    // Store last used options
+    list.local.options = options
+    markConfigChanged()
     return {localData: list.local, exportedList}
 }
 
