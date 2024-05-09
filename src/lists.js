@@ -203,6 +203,25 @@ export async function updateList(src) {
     return list
 }
 
+/** Export the list to disk
+ * @param {LocalListData["options"] options}
+*/
+export function exportList(src, options) {
+    const list = getListBySource(src).full
+    const exportedList = {
+        meta: structuredClone(list.meta),
+        users: structuredClone(list.users)
+    }
+    if (options.includeReports) {
+        for (var [plat, platReports] of Object.entries(list.reports)) {
+            for (var reportedUser of platReports) {
+                exportedList.users[plat].push(reportedUser)
+            }
+        }
+    }
+    return {localData: list.local, exportedList}
+}
+
 /** Remove a list by source URL/UID */
 export function removeList(src) {
     console.debug("Delete list requested:", src)

@@ -1,4 +1,5 @@
 var TOTAL_SUBS = 0
+var CUR_EXPORT
 
 // UI background
 function fetchNewList(ev) {
@@ -29,6 +30,9 @@ function onListAction(ev) {
         case "upd":
             updateList(ev.target.parentElement)
             break
+        case "export":
+            exportList(ev.target.parentElement)
+            break
         case "del":
             deleteList(ev.target.parentElement)
             break
@@ -55,6 +59,42 @@ function updateList(subEle) {
         if (!updatedData) return
         uiSetListData(subEle, updatedData)
     })
+}
+
+async function exportList(subEle) {
+    //todo: popup mini options to set below data
+    /** @type {LocalListData["options"]} */
+    let options = {
+        includeReports: false
+    }
+    /** @type {{localData: LocalListData, exportedList: List}} */
+    const {localData, exportedList} = await chrome.runtime.sendMessage({
+        action: "export-list",
+        uid: subEle.uid,
+        options
+    })
+    let filename = localData.source.split(/[/\\]/).at(-1)
+    if (!filename.endsWith(".json")) {
+        filename = `${exportedList.meta.name.toLowerCase().replace(" ", "_")}.json"`
+    }
+    let file = new File(
+        [JSON.stringify(exportedList, null, 2)],
+        filename,
+        {type: "application/json"}
+    )
+    CUR_EXPORT = URL.createObjectURL(file)
+    // Would like to use last used dir as default save, but imagine extension APIs being useful!
+    chrome.downloads.download({
+        url: CUR_EXPORT,
+        filename,
+        saveAs: true
+    })
+}
+
+/** @param {chrome.downloads.DownloadDelta} data */
+function exportDone(data) {
+    if (data.state?.current != "complete") return
+    URL.revokeObjectURL(CUR_EXPORT)
 }
 
 /**
@@ -91,7 +131,7 @@ function getId(id) {
 function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", onListAction)
     getId("new-list").addEventListener("keyup", fetchNewList)
-    // getId("save").addEventListener('click', saveOptions)
+    chrome.downloads.onChanged.addListener(exportDone)
     chrome.runtime.sendMessage({action: "get-cfg"}).then(cfg => {
         //todo: move to actual func to set up complex ui/options
         cfg.lists.forEach(uiAddList)

@@ -48,12 +48,16 @@ interface ListMeta {
     reportData?: any
 }
 
-/** Information added by Watchtower on download for various uses. */
+/** Information added by Watchtower for various uses. */
 interface LocalListData {
-    /** Download/update URL of the list. Also used as UID */
+    /** Download/update URL of the list. Also used as UID. */
     source: string
-    /** The total number of users */
+    /** The total number of users. */
     size: number
+    options: {
+        /** Whether to merge reports into the main list on export. */
+        includeReports: boolean
+    }
 }
 
 /** Defines the full internal schema of a saved list. */

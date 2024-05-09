@@ -8,7 +8,8 @@
       "alarms",
       "storage",
       "unlimitedStorage",
-      "contextMenus"
+      "contextMenus",
+      "downloads"
    ],
    "background": {
       "service_worker": "src/main.js",
