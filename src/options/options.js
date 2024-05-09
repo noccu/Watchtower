@@ -25,7 +25,7 @@ function fetchNewList(ev) {
 
 /** @param {MouseEvent} ev */
 function onListAction(ev) {
-    if (!ev.target.parentElement.uid) return
+    if (!ev.target.parentElement.list) return
     switch(ev.target.value) {
         case "upd":
             updateList(ev.target.parentElement)
@@ -42,7 +42,7 @@ function onListAction(ev) {
 function deleteList(subEle) {
     chrome.runtime.sendMessage({
         action: "del-list",
-        uid: subEle.uid
+        uid: subEle.list.local.source
     }).then(isDeleted => {
         if (!isDeleted) return
         subEle.remove()
@@ -54,7 +54,7 @@ function deleteList(subEle) {
 function updateList(subEle) {
     chrome.runtime.sendMessage({
         action: "upd-list",
-        uid: subEle.uid
+        uid: subEle.list.local.source
     }).then(updatedData => {
         if (!updatedData) return
         uiSetListData(subEle, updatedData)
@@ -70,7 +70,7 @@ async function exportList(subEle) {
     /** @type {{localData: LocalListData, exportedList: List}} */
     const {localData, exportedList} = await chrome.runtime.sendMessage({
         action: "export-list",
-        uid: subEle.uid,
+        uid: subEle.list.local.source,
         options
     })
     let filename = localData.source.split(/[/\\]/).at(-1)
@@ -105,7 +105,7 @@ function uiSetListData(ele, data) {
     ele.querySelector(".sub-name").textContent = data.meta.name
     ele.querySelector(".sub-url").href = data.meta.homepage || data.local.source
     ele.querySelector(".sub-num span").textContent = data.local.size
-    ele.uid = data.local.source
+    ele.list = data
 }
 
 /** @param {SerializedList} data */
