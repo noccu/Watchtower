@@ -25,9 +25,8 @@ class CachedList {
     /** @param {List} newData */
     update(newData) {
         this.meta = this.full.meta = newData.meta
-        this.local = this.full.local = newData.local
-        this.reports = this.full.reports = newData.reports
         this.full.users = newData.users
+        Object.assign(this.local, newData.local)
     }
     /**  @param {CSUser} csUser */
     addReport(csUser) {
