@@ -5,7 +5,7 @@ var CUR_REPORT
 
 async function loadReportableLists() {
     /** @type {SerializedList[]} */
-    let lists = await chrome.runtime.sendMessage({action: "get-report-lists"})
+    let lists = await chrome.runtime.sendMessage({ action: "get-report-lists" })
     for (let list of lists) {
         let option = document.createElement("option")
         option.text = list.meta.name
@@ -36,13 +36,13 @@ function report() {
     let options = {}
     for (var opt of document.querySelectorAll(".option")) {
         if (opt.type == "checkbox") {
-            options[opt.value] = opt.checked
+            options[opt.name] = opt.checked
         }
         // Other option types
     }
     console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
     chrome.runtime.sendMessage({
-        action:"send-report",
+        action: "send-report",
         options,
         user: CUR_REPORT,
         list: selectedList
@@ -62,7 +62,7 @@ function onLoad() {
     loadReportableLists()
     document.getElementById("report").addEventListener("click", report)
     chrome.runtime.onMessage.addListener(swListener)
-    chrome.runtime.sendMessage({action: "report-page-loaded"})
+    chrome.runtime.sendMessage({ action: "report-page-loaded" })
 }
 
 document.addEventListener("DOMContentLoaded", onLoad)

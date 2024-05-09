@@ -26,7 +26,7 @@ function fetchNewList(ev) {
 /** @param {MouseEvent} ev */
 function onListAction(ev) {
     if (!ev.target.parentElement.list) return
-    switch(ev.target.value) {
+    switch (ev.target.name) {
         case "upd":
             updateList(ev.target.parentElement)
             break
@@ -80,7 +80,7 @@ async function exportList(subEle) {
     let file = new File(
         [JSON.stringify(exportedList, null, 2)],
         filename,
-        {type: "application/json"}
+        { type: "application/json" }
     )
     CUR_EXPORT = URL.createObjectURL(file)
     // Would like to use last used dir as default save, but imagine extension APIs being useful!
@@ -118,7 +118,7 @@ function uiAddList(data) {
 }
 
 function saveCfg() {
-    chrome.runtime.sendMessage({action: "save-cfg"})
+    chrome.runtime.sendMessage({ action: "save-cfg" })
 }
 
 // -> <-
@@ -132,7 +132,7 @@ function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", onListAction)
     getId("new-list").addEventListener("keyup", fetchNewList)
     chrome.downloads.onChanged.addListener(exportDone)
-    chrome.runtime.sendMessage({action: "get-cfg"}).then(cfg => {
+    chrome.runtime.sendMessage({ action: "get-cfg" }).then(cfg => {
         //todo: move to actual func to set up complex ui/options
         cfg.lists.forEach(uiAddList)
     })
