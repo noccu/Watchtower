@@ -9,8 +9,8 @@ export var REPORT_PAGE_READY
 export async function startReport(data, tab) {
     if (data.menuItemId != "wt-report") return
     let csUser = await getReportData(tab, data.linkUrl)
-    let user = lookupUser(csUser)
-    let rUser = {...csUser, platform: user.platform }
+    let user = lookupUser(csUser.platform, csUser)
+    let rUser = {...csUser, onLists: user?.onLists }
     console.debug("Reporting user:", rUser, data)
     openReportDetails(tab, rUser)
 }
