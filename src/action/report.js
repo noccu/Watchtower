@@ -1,3 +1,5 @@
+import { serializeOptions } from "../utils.js"
+
 /** @type {HTMLSelectElement} */
 const LIST_CHOICE = document.getElementById("lists")
 /** @type {CSUser} */
@@ -33,13 +35,7 @@ function report() {
     if (LIST_CHOICE.selectedIndex == -1) return
     /** @type {SerializedList} */
     let selectedList = LIST_CHOICE.options[LIST_CHOICE.selectedIndex].list
-    let options = {}
-    for (var opt of document.querySelectorAll(".option")) {
-        if (opt.type == "checkbox") {
-            options[opt.name] = opt.checked
-        }
-        // Other option types
-    }
+    let options = serializeOptions(document.querySelectorAll(".option"))
     console.debug(`Reporting ${CUR_REPORT.platform} user ${CUR_REPORT.name} to ${selectedList.meta.name} through ${selectedList.meta.reportTarget}`)
     chrome.runtime.sendMessage({
         action: "send-report",
