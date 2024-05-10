@@ -256,7 +256,7 @@ export function removeList(src) {
 async function downLoadList(url) {
     console.log(`Fetching new list: ${url}`)
     /** @type {List} */
-    let data = await fetch(url).then(
+    let list = await fetch(url).then(
         data => data.json().catch(e => {
             console.error(`URL did not return JSON data.\n${e}`)
             throw e
@@ -269,13 +269,13 @@ async function downLoadList(url) {
     // The above should throw out of the function if a problem occurs.
 
     // Add some local data
-    data.local = {
+    list.local = {
         source: url,
-        size: Object.values(data.users).reduce((total, cur) => total + cur.length, 0)
+        size: Object.values(list.users).reduce((total, cur) => total + cur.length, 0)
     }
     // Add the object to store reports in locally
-    data.reports = {}
+    list.reports = {}
 
     console.log("List fetched")
-    return data
+    return list
 }
