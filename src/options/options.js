@@ -1,3 +1,6 @@
+import { DEFAULT_LIST_EXPORT_OPTIONS } from "../constants.js"
+import { deserializeOptions, serializeOptions } from "../utils.js"
+
 var TOTAL_SUBS = 0
 var CUR_EXPORT
 
@@ -31,12 +34,24 @@ function onListAction(ev) {
             updateList(ev.target.parentElement)
             break
         case "export":
-            exportList(ev.target.parentElement)
+            showExportDialog(ev)
             break
         case "del":
             deleteList(ev.target.parentElement)
             break
     }
+}
+
+/** @param {MouseEvent} ev */
+function showExportDialog(ev) {
+    let dialog = getId("export-options")
+    dialog.invoker = ev.target.parentElement
+    /** @type {SerializedList} */
+    let list = dialog.invoker.list
+    deserializeOptions(list.local.exportOptions || DEFAULT_LIST_EXPORT_OPTIONS, dialog)
+    dialog.style.left = `${ev.clientX}px`
+    dialog.style.top = `${ev.clientY}px`
+    dialog.showPopover()
 }
 
 function deleteList(subEle) {
@@ -61,16 +76,16 @@ function updateList(subEle) {
     })
 }
 
-async function exportList(subEle) {
-    //todo: popup mini options to set below data
-    /** @type {LocalListData["options"]} */
-    let options = {
-        includeReports: false
-    }
+async function exportList(_ev) {
+    const dialog = getId("export-options")
+    /** @type {LocalListData["exportOptions"]} */
+    const options = serializeOptions(dialog.querySelectorAll(".option"))
+    // Update local page cache
+    dialog.invoker.list.local.exportOptions = options
     /** @type {{localData: LocalListData, exportedList: List}} */
-    const {localData, exportedList} = await chrome.runtime.sendMessage({
+    const { localData, exportedList } = await chrome.runtime.sendMessage({
         action: "export-list",
-        uid: subEle.list.local.source,
+        uid: dialog.invoker.list.local.source,
         options
     })
     let filename = localData.source.split(/[/\\]/).at(-1)
@@ -89,6 +104,7 @@ async function exportList(subEle) {
         filename,
         saveAs: true
     })
+    dialog.hidePopover()
 }
 
 /** @param {chrome.downloads.DownloadDelta} data */
@@ -131,6 +147,7 @@ function getId(id) {
 function onOptionsOpened() {
     getId("subscriptions").addEventListener("click", onListAction)
     getId("new-list").addEventListener("keyup", fetchNewList)
+    getId("export-list").addEventListener("click", exportList)
     chrome.downloads.onChanged.addListener(exportDone)
     chrome.runtime.sendMessage({ action: "get-cfg" }).then(cfg => {
         //todo: move to actual func to set up complex ui/options

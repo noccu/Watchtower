@@ -19,3 +19,8 @@ export const CONFIG_DEFAULT = {
     },
     lists: []
 }
+
+/** @type {LocalListData["exportOptions"]} */
+export const DEFAULT_LIST_EXPORT_OPTIONS = {
+    includeReports: false
+}

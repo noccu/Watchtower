@@ -24,6 +24,19 @@ ul {
   width: min(40em, 500%);
 }
 
+#export-options {
+  margin: 0;
+}
+
+#export-options > label {
+  display: block;
+}
+
+#export-actions {
+  text-align: center;
+  margin-top: 1em;
+}
+
 .sub {
   display: grid;
   grid-template-columns: subgrid;

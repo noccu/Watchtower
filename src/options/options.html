@@ -4,7 +4,7 @@
 <head>
     <title>Watchtower Settings</title>
     <link rel="stylesheet" href="options.css">
-    <script defer src="options.js"></script>
+    <script defer type="module" src="options.js"></script>
 </head>
 
 <body>
@@ -19,6 +19,13 @@
             <button class="sub-del" title="Remove" name="del">x</button>
         </label>
     </template>
+
+    <div popover id="export-options">
+        <label><input class="option" type="checkbox" name="includeReports"/>Include reports</label>
+        <div id="export-actions">
+            <button id="export-list" name="export">Export</button>
+        </div>
+    </div>
 
     <section id="subscriptions">
         Subscriptions (<span id="subLen">0</span>)

@@ -54,7 +54,7 @@ interface LocalListData {
     source: string
     /** The total number of users. */
     size: number
-    options: {
+    exportOptions: {
         /** Whether to merge reports into the main list on export. */
         includeReports: boolean
     }

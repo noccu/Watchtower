@@ -203,7 +203,7 @@ export async function updateList(src) {
 }
 
 /** Export the list to disk
- * @param {LocalListData["options"] options}
+ * @param {LocalListData["exportOptions"]} options
 */
 export function exportList(src, options) {
     const list = getListBySource(src).full
@@ -219,7 +219,7 @@ export function exportList(src, options) {
         }
     }
     // Store last used options
-    list.local.options = options
+    list.local.exportOptions = options
     markConfigChanged()
     return {localData: list.local, exportedList}
 }

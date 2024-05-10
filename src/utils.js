@@ -15,9 +15,8 @@ export function serializeOptions(options) {
 
 /** @param {HTMLElement} parentElement */
 export function deserializeOptions(options, parentElement) {
-    var ele
     for (var [key, value] of Object.entries(options)) {
-        ele = parentElement.querySelector(`[name='${key}']`)
+        var ele = parentElement.querySelector(`[name='${key}']`)
         if (ele.type == "checkbox") {
             ele.checked = value
         }
