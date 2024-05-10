@@ -3,15 +3,7 @@ import { loadLists, lookupUser, getPlatformList, addList, removeList, getReporta
 import { reportTargets } from "./constants.js"
 import { startReport, REPORT_PAGE_READY, finishReport } from "./report.js"
 
-// Messaging
-//todo: Use promises/async once Chrome supports it for extension messaging.
-//todo: alternatively, just use a basic keep-alive.
-chrome.runtime.onMessage.addListener((msg, _sender, answer) => {
-    console.debug("Received:", msg)
-    READY.then(() => respond(msg, answer))
-    // Expect async answer
-    return true
-})
+// Messaging //
 
 function respond(msg, answer) {
     switch (msg.action) {
@@ -62,10 +54,20 @@ function respond(msg, answer) {
     }
 }
 
-// Management
+// Load //
+
 const READY = loadConfig().then(async cfg => {
     await checkListUpdates()
     loadLists(cfg.lists)
+})
+
+//todo: Use promises/async once Chrome supports it for extension messaging.
+//todo: alternatively, just use a basic keep-alive.
+chrome.runtime.onMessage.addListener((msg, _sender, answer) => {
+    console.debug("Received:", msg)
+    READY.then(() => respond(msg, answer))
+    // Expect async answer
+    return true
 })
 
 // Install //
