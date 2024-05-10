@@ -67,17 +67,22 @@ const READY = loadConfig().then(async cfg => {
     await checkListUpdates()
     loadLists(cfg.lists)
 })
-// Menu creation will fail after wake-up.
-chrome.contextMenus.create(
-    {
-        id: "wt-report",
-        title: "Watchtower report…",
-        contexts: ["link"],
-        targetUrlPatterns: reportTargets
-    },
-    () => {
-        if (!chrome.runtime.lastError) {
-            chrome.contextMenus.onClicked.addListener(startReport)
+
+// Install //
+
+chrome.runtime.onInstalled.addListener((ev) => {
+    if(!["install", "update"].includes(ev.reason)) return
+    chrome.contextMenus.create(
+        {
+            id: "wt-report",
+            title: "Watchtower report…",
+            contexts: ["link"],
+            targetUrlPatterns: reportTargets
+        },
+        () => {
+            if (!chrome.runtime.lastError) {
+                chrome.contextMenus.onClicked.addListener(startReport)
+            }
         }
-    }
-)
+    )
+})
