@@ -35,7 +35,11 @@ class CachedList {
         if (!this.reports[platform]) {
             this.reports[platform] = []
         }
+        if (this.reports[platform].some(u => u.id == loadedUser.id)) {
+            return false
+        }
         this.reports[platform].push(loadedUser.user)
+        return true
     }
 }
 
@@ -216,7 +220,7 @@ export function exportList(src, options) {
     // Store last used options
     list.local.exportOptions = options
     markConfigChanged()
-    return {localData: list.local, exportedList}
+    return { localData: list.local, exportedList }
 }
 
 /** Remove a list by source URL/UID */

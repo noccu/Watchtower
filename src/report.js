@@ -8,9 +8,9 @@ export var REPORT_PAGE_READY
  * @param {chrome.contextMenus.OnClickData} data */
 export async function startReport(data, tab) {
     if (data.menuItemId != "wt-report") return
-    let {platform, ...user} = await getReportData(tab, data.linkUrl)
+    let { platform, ...user } = await getReportData(tab, data.linkUrl)
     let onLists = lookupUser(platform, user)?.onLists
-    let rUser = {user, platform, onLists }
+    let rUser = { user, platform, onLists }
     console.debug("Reporting user:", rUser, data)
     openReportDetails(tab, rUser)
 }
@@ -56,14 +56,16 @@ async function openReportDetails(_tab, user) {
 }
 
 /** @param {{options: ReportOptions, userData: ReportUser, list: SerializedList}} */
-export function finishReport({options, userData, list}) {
+export function finishReport({ options, userData, list }) {
     if (!options.appeal) {
         let targetList = getListBySource(list.local.source)
         let loadedUser = indexSingleUser(userData.platform, userData.user)
         if (loadedUser.isOnList(targetList)) return
-        targetList.addReport(userData.platform, loadedUser)
-        markConfigChanged()
-        saveConfig("lists")
+        let reportAdded = targetList.addReport(userData.platform, loadedUser)
+        if (reportAdded) {
+            markConfigChanged()
+            saveConfig("lists")
+        }
     }
     // if (options.localOnly) return
     //todo: Send data
