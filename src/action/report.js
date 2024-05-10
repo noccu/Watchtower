@@ -45,14 +45,14 @@ function report() {
     })
 }
 
-function sizeToFit() {
-    let xdelta = window.outerWidth - window.innerWidth
-    let ydelta = window.outerHeight - window.innerHeight
-    window.resizeTo(
-        document.documentElement.offsetWidth + xdelta,
-        document.documentElement.offsetHeight + ydelta
-    )
-}
+// function sizeToFit() {
+//     let xdelta = window.outerWidth - window.innerWidth
+//     let ydelta = window.outerHeight - window.innerHeight
+//     window.resizeTo(
+//         document.documentElement.offsetWidth + xdelta,
+//         document.documentElement.offsetHeight + ydelta
+//     )
+// }
 
 function onLoad() {
     loadReportableLists()
