@@ -16,12 +16,12 @@ async function loadReportableLists() {
     }
 }
 
-/** @param {ReportUser} user */
-function updateReportData(user) {
-    CUR_REPORT = user
-    document.getElementById("user-platform").textContent = user.platform
-    document.getElementById("user-name").textContent = user.name
-    document.getElementById("user-data").textContent = JSON.stringify(user, null, 2)
+/** @param {ReportUser} userData */
+function updateReportData(userData) {
+    CUR_REPORT = userData
+    document.getElementById("user-platform").textContent = userData.platform
+    document.getElementById("user-name").textContent = userData.user.name
+    document.getElementById("user-data").textContent = JSON.stringify(userData.user, null, 2)
     // sizeToFit()
 }
 
@@ -40,7 +40,7 @@ function report() {
     chrome.runtime.sendMessage({
         action: "send-report",
         options,
-        user: CUR_REPORT,
+        userData: CUR_REPORT,
         list: selectedList
     })
 }

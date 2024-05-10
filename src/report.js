@@ -1,4 +1,4 @@
-import { getListBySource, lookupUser } from "./lists.js"
+import { getListBySource, indexSingleUser, lookupUser } from "./lists.js"
 import { markConfigChanged, saveConfig } from "./config.js"
 
 const POPUP_PATH = "src/action/report.html"
@@ -8,9 +8,9 @@ export var REPORT_PAGE_READY
  * @param {chrome.contextMenus.OnClickData} data */
 export async function startReport(data, tab) {
     if (data.menuItemId != "wt-report") return
-    let csUser = await getReportData(tab, data.linkUrl)
-    let user = lookupUser(csUser.platform, csUser)
-    let rUser = {...csUser, onLists: user?.onLists }
+    let {platform, ...user} = await getReportData(tab, data.linkUrl)
+    let onLists = lookupUser(platform, user)?.onLists
+    let rUser = {user, platform, onLists }
     console.debug("Reporting user:", rUser, data)
     openReportDetails(tab, rUser)
 }
@@ -55,15 +55,16 @@ async function openReportDetails(_tab, user) {
     })
 }
 
-/** @param {{options: ReportOptions, user: CSUser, list: SerializedList}} */
-export function finishReport({options, user, list}) {
+/** @param {{options: ReportOptions, userData: ReportUser, list: SerializedList}} */
+export function finishReport({options, userData, list}) {
     if (!options.appeal) {
-        let reportAdded = getListBySource(list.local.source).addReport(user)
-        if (reportAdded) {
-            markConfigChanged()
-            saveConfig("lists")
-        }
+        let targetList = getListBySource(list.local.source)
+        let loadedUser = indexSingleUser(userData.platform, userData.user)
+        if (loadedUser.isOnList(targetList)) return
+        targetList.addReport(userData.platform, loadedUser)
+        markConfigChanged()
+        saveConfig("lists")
     }
-    if (options.localOnly) return
+    // if (options.localOnly) return
     //todo: Send data
 }

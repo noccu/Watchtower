@@ -28,19 +28,14 @@ class CachedList {
         this.full.users = newData.users
         Object.assign(this.local, newData.local)
     }
-    /**  @param {CSUser} csUser */
-    addReport(csUser) {
-        let {platform, ...user} = csUser
-        // Global cache
-        let loadedUser = indexSingleUser(platform, user, this)
-        if (loadedUser.isOnList(this)) return false
+    /**  @param {CachedUser} loadedUser */
+    addReport(platform, loadedUser) {
         loadedUser.addToList(this)
         // Report data
         if (!this.reports[platform]) {
             this.reports[platform] = []
         }
-        this.reports[platform].push(user)
-        return true
+        this.reports[platform].push(loadedUser.user)
     }
 }
 
@@ -104,7 +99,7 @@ function indexUsers(list) {
  * @param {PLATFORM} plat
  * @param {User} user
 */
-function indexSingleUser(plat, user) {
+export function indexSingleUser(plat, user) {
     let loadedUser = lookupUser(plat, user)
     if (!loadedUser) {
         loadedUser = new CachedUser(user)

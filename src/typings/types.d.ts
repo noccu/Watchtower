@@ -22,7 +22,10 @@ interface CSUser extends User {
 }
 
 /** The object format used for reporting. */
-type ReportUser = CSUser & SerializedUser
+interface ReportUser extends SerializedUser {
+    /** Platform the user belongs to. */
+    platform: PLATFORM
+}
 
 /** A list's metadata schema, holding all public info. */
 interface ListMeta {
