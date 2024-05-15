@@ -94,7 +94,7 @@ function indexUsers(list) {
     const allUsers = Object.entries(list.full.users).concat(Object.entries(list.reports))
     for (var [plat, platUsers] of allUsers) {
         for (var user of platUsers) {
-            indexSingleUser(plat, user, list).addToList(list)
+            indexSingleUser(plat, user, list)?.addToList(list)
         }
     }
 }
@@ -104,6 +104,7 @@ function indexUsers(list) {
  * @param {User} user
 */
 export function indexSingleUser(plat, user) {
+    if (!(plat in PLATFORMS)) return
     let loadedUser = lookupUser(plat, user)
     if (!loadedUser) {
         loadedUser = new CachedUser(user)
