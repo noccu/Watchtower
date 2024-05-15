@@ -259,7 +259,7 @@ function checkUser(user) {
 }
 
 // Reports
-function msgResponder(msg, sender, answer) {
+function msgResponder(msg, _sender, answer) {
     console.debug("Received:", msg)
     if (msg.action == "get-user") {
         let target = new URL(msg.targetLink)
@@ -269,9 +269,9 @@ function msgResponder(msg, sender, answer) {
             answer(undefined)
             return
         }
-        user.get().then(user => {
+        user.get().then(data => {
             answer({
-                ...user,
+                ...data,
                 platform: PLATFORM
             })
         })
