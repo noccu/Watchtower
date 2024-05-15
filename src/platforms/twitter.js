@@ -42,6 +42,7 @@ async function parseResponse(ev) {
     let reqType = m[1]
     let resp = JSON.parse(ev.detail.data)
     console.debug(`Parsing response for: ${reqType}`)
+    if (isObjEmpty(resp.data)) return
     //? Set a global state?
     switch (reqType) {
         case "UserByScreenName":
@@ -277,6 +278,11 @@ function msgResponder(msg, _sender, answer) {
         })
         return true
     }
+}
+
+function isObjEmpty(obj) {
+    for(const _ in obj) return false
+    return true
 }
 
 function onLoad() {
