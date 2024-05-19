@@ -7,7 +7,8 @@ export const PLATFORMS = {
 }
 
 export const reportTargets = [
-    "https://twitter.com/*"
+    "https://twitter.com/*",
+    "https://x.com/*"
 ]
 
 // The extension's default options
