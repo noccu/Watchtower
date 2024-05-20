@@ -23,7 +23,7 @@
             "*://*.twitter.com/*",
             "https://x.com/*"
          ],
-         "js": ["src/xhr_patch.js"]
+         "js": ["src/intercepts/xhr_patch.js"]
       },
       {
          "run_at": "document_start",
@@ -31,7 +31,7 @@
          "matches": [
             "https://misskey.io/*"
          ],
-         "js": ["src/fetch_patch.js"]
+         "js": ["src/intercepts/fetch_patch.js"]
       },
       {
          "run_at": "document_start",
@@ -39,7 +39,7 @@
          "matches": [
             "https://misskey.io/*"
          ],
-         "js": ["src/force_contextmenu.js"]
+         "js": ["src/intercepts/force_contextmenu.js"]
       },
       {
          "run_at": "document_start",
