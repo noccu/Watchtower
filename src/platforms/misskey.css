@@ -1,0 +1,35 @@
+:root {
+    --default-mark-color: rgba(203, 27, 27, 0.75);
+}
+
+/* Adjust page CSS */
+.xCPfz {
+    flex-wrap: wrap;
+}
+
+.wt-label-container {
+    flex-basis: 100%;
+    margin: 0.1em 0 0.2em 0;
+}
+
+.wt-label {
+    background-color: var(--default-mark-color);
+    margin-right: 0.5em;
+    padding: 0.1em 0.4em;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: system-ui;
+}
+
+#wt-msg-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em;
+}
+
+.wt-msg {
+    padding: 0.5em;
+    white-space: pre-wrap;
+    background-color: var(--default-mark-color);
+    font-family: system-ui;
+}

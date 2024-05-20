@@ -4,8 +4,12 @@ interface User {
     name: string
     /** The main platform ID of the user. Used as lookup key. */
     id: string
+    /** [Fediverse] The fediverse instance for relevant users. */
+    host?: string
     /** [Twitter] Some kinda new id? Unsure, but saved in case. */
     hash?: string
+    /** [Misskey] List of different ids, perhaps related to multi-acc. Saved if exists. */
+    aliases?: string[] //* Can be null or empty array in API
 }
 
 /** A serialized version of the {@link CachedUser} class. */

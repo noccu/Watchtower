@@ -27,6 +27,22 @@
       },
       {
          "run_at": "document_start",
+         "world": "MAIN",
+         "matches": [
+            "https://misskey.io/*"
+         ],
+         "js": ["src/fetch_patch.js"]
+      },
+      {
+         "run_at": "document_start",
+         "world": "MAIN",
+         "matches": [
+            "https://misskey.io/*"
+         ],
+         "js": ["src/force_contextmenu.js"]
+      },
+      {
+         "run_at": "document_start",
          "world": "ISOLATED",
          "matches": [
             "*://*.twitter.com/*",
@@ -34,6 +50,15 @@
          ],
          "js": ["src/platforms/twitter.js"],
          "css": ["src/platforms/twitter.css"]
+      },
+      {
+         "run_at": "document_start",
+         "world": "ISOLATED",
+         "matches": [
+            "https://misskey.io/*"
+         ],
+         "js": ["src/platforms/misskey.js"],
+         "css": ["src/platforms/misskey.css"]
       }
    ],
    "options_page": "src/options/options.html",
