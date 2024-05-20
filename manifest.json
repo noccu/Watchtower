@@ -23,8 +23,7 @@
             "*://*.twitter.com/*",
             "https://x.com/*"
          ],
-         "js": ["src/xhr_patch.js"],
-         "css": ["src/platforms/twitter.css"]
+         "js": ["src/xhr_patch.js"]
       },
       {
          "run_at": "document_start",
@@ -33,7 +32,8 @@
             "*://*.twitter.com/*",
             "https://x.com/*"
          ],
-         "js": ["src/platforms/twitter.js"]
+         "js": ["src/platforms/twitter.js"],
+         "css": ["src/platforms/twitter.css"]
       }
    ],
    "options_page": "src/options/options.html",
