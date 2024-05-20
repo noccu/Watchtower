@@ -213,6 +213,9 @@ export function exportList(src, options) {
     }
     if (options.includeReports) {
         for (var [plat, platReports] of Object.entries(list.reports)) {
+            if (!exportedList.users[plat]) {
+                exportedList.users[plat] = []
+            }
             for (var reportedUser of platReports) {
                 exportedList.users[plat].push(reportedUser)
             }
