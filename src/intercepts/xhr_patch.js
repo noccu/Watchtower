@@ -1,4 +1,5 @@
 /** Monkey patch XHR requests */
+const SUPPORTED_TYPES = ["", "text", "json"]
 function captureXhr() {
     let old = window.XMLHttpRequest.prototype.open;
     window.XMLHttpRequest.prototype.open = function () {
@@ -8,6 +9,9 @@ function captureXhr() {
 }
 
 function relay() {
+    if (!SUPPORTED_TYPES.includes(this.responseType)) {
+        return
+    }
     globalThis.dispatchEvent(new CustomEvent(
         "wt-xhr",
         {detail: {
