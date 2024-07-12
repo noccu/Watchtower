@@ -70,6 +70,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, answer) => {
     return true
 })
 
+chrome.contextMenus.onClicked.addListener(startReport)
+
 // Install //
 
 chrome.runtime.onInstalled.addListener((ev) => {
@@ -80,11 +82,6 @@ chrome.runtime.onInstalled.addListener((ev) => {
             title: "Watchtower report…",
             contexts: ["link"],
             targetUrlPatterns: reportTargets
-        },
-        () => {
-            if (!chrome.runtime.lastError) {
-                chrome.contextMenus.onClicked.addListener(startReport)
-            }
         }
     )
 })
