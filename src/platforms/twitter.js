@@ -193,7 +193,7 @@ function markProfile(user) {
         msgCopy.style.backgroundColor = list.meta.color
         container.append(msgCopy)
     }
-    document.querySelector("[data-testid='UserName']").append(container)
+    document.querySelector("[data-testid='UserName']").after(container)
 }
 
 /**
@@ -210,7 +210,12 @@ function markTweet(userEl, user) {
         label.style.backgroundColor = list.meta.color
         container.append(label)
     }
-    userEl.append(container)
+    if (user.onLists.length > 2) {
+        userEl.after(container)
+    }
+    else {
+        userEl.append(container)
+    }
 }
 
 // Utils //

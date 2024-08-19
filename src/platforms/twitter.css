@@ -13,6 +13,13 @@
     font-family: system-ui;
 }
 
+#profile-msg-container {
+    margin-bottom: 1em;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.35em;
+}
+
 .profile-mark {
     background-color: var(--default-mark-color);
 }
@@ -22,4 +29,9 @@
     white-space: pre-wrap;
     background-color: var(--default-mark-color);
     font-family: system-ui;
+}
+
+.tweet-label-container {
+    display: flex;
+    flex-wrap: wrap;
 }
