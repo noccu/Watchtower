@@ -1,5 +1,5 @@
 import { getListBySource, indexSingleUser, lookupUser } from "./lists.js"
-import { markConfigChanged, saveConfig } from "./config.js"
+import { saveConfig } from "./config.js"
 
 const POPUP_PATH = "src/action/report.html"
 export var REPORT_PAGE_READY
@@ -63,7 +63,6 @@ export function finishReport({ options, userData, list }) {
         if (loadedUser.isOnList(targetList)) return
         let reportAdded = targetList.addReport(userData.platform, loadedUser)
         if (reportAdded) {
-            markConfigChanged()
             saveConfig("lists")
         }
     }

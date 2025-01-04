@@ -1,4 +1,4 @@
-import { changeSetting, getConfig, markConfigChanged, saveConfig } from "./config.js"
+import {getConfig, saveConfig, changeSetting} from "./config.js"
 import { PLATFORMS } from "./constants.js"
 
 /** Pointers to loaded list data, users excluded.
@@ -150,7 +150,7 @@ export async function addList(url) {
     let data = await downLoadList(url)
 
     getConfig("lists").push(data)
-    markConfigChanged()
+    // saveConfig("lists")
     // globalThis.dispatchEvent(new CustomEvent("listsChanged", {change: "add", list: data}))
     loadSingleList(data)
 
@@ -188,7 +188,6 @@ export function checkListUpdates() {
     if (now - set.lastUpdate > set.updateInterval) {
         console.debug("Updates required.")
         changeSetting("lastUpdate", now)
-        saveConfig("settings")
         return updateAllLists()
     }
     return Promise.resolve()
@@ -198,7 +197,6 @@ export function checkListUpdates() {
 export async function updateList(src) {
     let list = getListBySource(src)
     await updateRawList(list)
-    markConfigChanged()
     return list
 }
 
@@ -223,7 +221,6 @@ export function exportList(src, options) {
     }
     // Store last used options
     list.local.exportOptions = options
-    markConfigChanged()
     return { localData: list.local, exportedList }
 }
 
@@ -245,7 +242,7 @@ export function removeList(src) {
 
     let savedLists = getConfig("lists")
     savedLists.splice(savedLists.indexOf(list.full), 1)
-    markConfigChanged()
+    // saveConfig("lists")
     // globalThis.dispatchEvent(new CustomEvent("listsChanged", {change: "del", list: list}))
     LISTS.splice(LISTS.indexOf(list), 1)
 
