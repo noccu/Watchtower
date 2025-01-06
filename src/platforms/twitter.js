@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail|BlockedAccountsAll)(?:\\?|$)")
+const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail|BlockedAccountsAll|SearchTimeline)(?:\\?|$)")
 const PLATFORM = "twitter"
 
 // Markers
@@ -66,6 +66,9 @@ async function parseResponse(ev) {
             break
         case "BlockedAccountsAll":
             handleInstructions(resp.data.viewer.timeline.timeline.instructions)
+            break
+        case "SearchTimeline":
+            handleInstructions(resp.data.search_by_raw_query.search_timeline.timeline.instructions)
             break
     }
     // console.debug(`Response Body: ${resp}`)
