@@ -59,6 +59,15 @@
          ],
          "js": ["src/platforms/misskey.js"],
          "css": ["src/platforms/misskey.css"]
+      },
+      {
+         "run_at": "document_start",
+         "world": "ISOLATED",
+         "matches": [
+            "https://*.patreon.com/*"
+         ],
+         "js": ["src/platforms/patreon.js"],
+         "css": ["src/platforms/patreon.css"]
       }
    ],
    "options_page": "src/options/options.html",

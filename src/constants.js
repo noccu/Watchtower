@@ -3,13 +3,15 @@ export var DBG = true
 /** @type {PlatformKeyed<string>} */
 export const PLATFORMS = {
     "twitter": "rest_id",
-    "misskey": "id"
+    "misskey": "id",
+    "patreon": "id"
 }
 
 export const reportTargets = [
     "https://twitter.com/*",
     "https://x.com/*",
-    "https://misskey.io/*"
+    "https://misskey.io/*",
+    "https://www.patreon.com/*"
 ]
 
 // The extension's default options
