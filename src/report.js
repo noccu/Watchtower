@@ -5,13 +5,15 @@ const POPUP_PATH = "src/action/report.html"
 export var REPORT_PAGE_READY
 
 /** Called on context menu report click
- * @param {chrome.contextMenus.OnClickData} data */
-export async function startReport(data, tab) {
-    if (data.menuItemId != "wt-report") return
-    let { platform, ...user } = await getReportData(tab, data.linkUrl)
+ * @param {chrome.contextMenus.OnClickData} ctx */
+export async function startReport(ctx, tab) {
+    if (ctx.menuItemId != "wt-report") return
+    const reportData = await getReportData(tab, ctx.linkUrl)
+    if (!reportData) return
+    let { platform, ...user } = reportData
     let onLists = lookupUser(platform, user)?.onLists
     let rUser = { user, platform, onLists }
-    console.debug("Reporting user:", rUser, data)
+    console.debug("Reporting user:", rUser, ctx)
     openReportDetails(tab, rUser)
 }
 
