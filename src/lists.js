@@ -25,6 +25,18 @@ class CachedList {
     /** @param {List} newData */
     update(newData) {
         this.meta = this.full.meta = newData.meta
+        let newReports = {}
+        for (let [plat, platReports] of Object.entries(this.reports)) {
+            let remainingReports = platReports.filter(
+                ru => !newData.users[plat].find(
+                    u => u.id == ru.id
+                )
+            )
+            if (remainingReports > 0){
+                newReports[plat] = remainingReports
+            }
+        }
+        this.full.reports = this.reports = newReports
         this.full.users = newData.users
         Object.assign(this.local, newData.local)
     }
