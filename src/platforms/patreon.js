@@ -16,7 +16,8 @@ const USER_MAP = {}
 
 
 function getNamedPath(path) {
-    return path.split(/[\/?]/)[1]
+    const parts = path.split(/[\/?]/)
+    return parts[1] == "checkout" ? parts[2] : parts[1]
 }
 
 async function parseLocation() {
@@ -41,7 +42,9 @@ function processProfile(username) {
         name: username
         // info.author.name is the displayname and not usable
     }
-    USER_MAP[username] = user
+    // Looks like Patreon names are case-insensitive, but we'll keep the original URL's capitalization.
+    // That's why it's not done in getNamedPath().
+    USER_MAP[username.toLowerCase()] = user
     checkUser(user).then(data => markProfile(data))
 }
 
@@ -59,7 +62,7 @@ function markProfile(user) {
         container.append(msgCopy)
     }
     // Central user info, under the post count.
-    document.querySelector("ul.sc-d23de7d0-5.YcnJB").after(container)
+    document.querySelector("ul[class^=sc-]").after(container)
 }
 
 // Communication //
@@ -83,7 +86,7 @@ function msgResponder(msg, _sender, answer) {
     if (msg.action == "get-user") {
         let target = new URL(msg.targetLink)
         let username = getNamedPath(target.pathname)
-        let user = USER_MAP[username]
+        let user = USER_MAP[username.toLowerCase()]
         if (!user) {
             answer(undefined)
             return
