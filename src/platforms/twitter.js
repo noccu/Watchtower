@@ -48,6 +48,9 @@ async function parseResponse(ev) {
         case "UserByScreenName":
             mapUser(resp.data.user.result)
             console.debug("New map:", USER_MAP)
+            if (resp.data.user.result.relationship_perspectives.blocking) {
+                processProfile()
+            }
             break
         case "UserTweets":
             // Yes there can be double timeline
