@@ -50,7 +50,9 @@ async function parseResponse(ev) {
             console.debug("New map:", USER_MAP)
             break
         case "UserTweets":
-            handleInstructions(resp.data.user.result.timeline_v2.timeline.instructions)
+            // Yes there can be double timeline
+            const userRes = resp.data.user.result.timeline_v2 || resp.data.user.result.timeline
+            handleInstructions(userRes.timeline.instructions)
             break
         case "CommunityTweetsTimeline":
             handleInstructions(resp.data.communityResults.result.ranked_community_timeline.timeline.instructions)
@@ -114,7 +116,7 @@ function handleItem(item) {
  * @returns {User}
 */
 function mapUser(userData){
-    let name = userData.legacy.screen_name
+    let name = userData.core.screen_name || userData.legacy.screen_name
     let curUser = USER_MAP[name]
     // Already mapped
     if (curUser?.isResolved) return
