@@ -1,4 +1,4 @@
-const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail|BlockedAccountsAll|SearchTimeline)(?:\\?|$)")
+const PATTERN = new RegExp("/(HomeTimeline|UserByScreenName|UserTweets|CommunitiesRankedTimeline|CommunityTweetsTimeline|TweetDetail|BlockedAccountsAll|SearchTimeline|membersSliceTimeline_Query)(?:\\?|$)")
 const PLATFORM = "twitter"
 
 // Markers
@@ -75,6 +75,9 @@ async function parseResponse(ev) {
         case "SearchTimeline":
             handleInstructions(resp.data.search_by_raw_query.search_timeline.timeline.instructions)
             break
+        case "membersSliceTimeline_Query":
+            handleCommunitySlice(resp.data.communityResults.result.members_slice.items_results)
+            break
     }
     // console.debug(`Response Body: ${resp}`)
 }
@@ -112,6 +115,12 @@ function handleItem(item) {
         case "TimelineUser":
             mapUser(item.itemContent.user_results.result)
             break
+    }
+}
+
+function handleCommunitySlice(memberList){
+    for (let member of memberList) {
+        mapUser(member.result)
     }
 }
 
