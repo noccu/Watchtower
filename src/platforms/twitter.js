@@ -137,6 +137,7 @@ function mapUser(userData){
 
 /** Map relevant users from API tweet data. */
 function mapFromTweetData(data){
+    if (!data) return
     // Oh very fun, twitter. APIs should be consistent!
     data = data.tweet || data
     // let tweetId = data.rest_id
@@ -146,7 +147,7 @@ function mapFromTweetData(data){
         mapFromTweetData(secondaryTweetData.result)
     }
     let communityData = data.community_results
-    if (communityData?.result) {
+    if (communityData?.result?.members_facepile_results) {
         for (var user of communityData.result.members_facepile_results) {
             mapUser(user.result)
         }
