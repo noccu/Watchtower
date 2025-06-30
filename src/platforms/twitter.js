@@ -46,9 +46,10 @@ async function parseResponse(ev) {
     //? Set a global state?
     switch (reqType) {
         case "UserByScreenName":
-            mapUser(resp.data.user.result)
+            const userResult = resp.data.user.result
+            mapUser(userResult)
             console.debug("New map:", USER_MAP)
-            if (resp.data.user.result.relationship_perspectives.blocking) {
+            if (userResult.relationship_perspectives.blocking ||userResult.privacy.protected) {
                 processProfile()
             }
             break
