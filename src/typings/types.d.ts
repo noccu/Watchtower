@@ -10,6 +10,8 @@ interface User {
     hash?: string
     /** [Misskey] List of different ids, perhaps related to multi-acc. Saved if exists. */
     aliases?: string[] //* Can be null or empty array in API
+    /** [Patreon] The ID of a "campaign". Seems to indicate one account can own multiple pages, but is still not implemented? Can generally be seen as equivalent to user ID. */
+    campaign_id?: string
 }
 
 /** A serialized version of the {@link CachedUser} class. */

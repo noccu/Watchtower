@@ -33,13 +33,16 @@ async function parseLocation() {
 }
 
 /** Process profile pages */
-function processProfile(username) {
-    const info = JSON.parse(document.head.querySelector("script[type='application/ld+json']").textContent)
-    const userId = info.author.image.contentUrl.match(/campaign\/(\d+)\//)[1]
+async function processProfile(username) {
+    const campaignInfo = JSON.parse(document.head.querySelector("script[type='application/ld+json']").textContent)
+    const campaignId = campaignInfo.author.image.contentUrl.match(/campaign\/(\d+)\//)[1]
+    const userInfo = (await fetch(`https://www.patreon.com/api/campaigns/${campaignId}`)).json()
+    const userId = userInfo.data.relationships.creator.data.id
     /** @type {User} */
     const user = {
         id: userId,
-        name: username
+        name: username,
+        campaign_id: campaignId
         // info.author.name is the displayname and not usable
     }
     // Looks like Patreon names are case-insensitive, but we'll keep the original URL's capitalization.
