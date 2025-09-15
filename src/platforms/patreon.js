@@ -13,15 +13,19 @@ const MESSAGE_CONTAINER = document.createElement("div")
 MESSAGE_CONTAINER.id = "profile-msg-container"
 
 const USER_MAP = {}
+var NEW_LAYOUT = false
 
 
+/**@argument {URL|Location} path */
 function getNamedPath(path) {
-    const parts = path.split(/[\/?]/)
-    return parts[1] == "checkout" ? parts[2] : parts[1]
+    const parts = path.pathname.split(/[\/?]/)
+    const loc = ["checkout", "cw"].includes(parts[1]) ? parts[2] : parts[1]
+    return { root: parts[1], loc }
 }
 
 async function parseLocation() {
-    const loc = getNamedPath(location.pathname)
+    const { root, loc } = getNamedPath(location)
+    if (root == "cw") NEW_LAYOUT = true
     if (IGNORED_LOCATIONS.includes(loc)) return
     else if (loc == "explore") {
         console.warn("Not implemented")
@@ -34,10 +38,24 @@ async function parseLocation() {
 
 /** Process profile pages */
 async function processProfile(username) {
-    const campaignInfo = JSON.parse(document.head.querySelector("script[type='application/ld+json']").textContent)
-    const campaignId = campaignInfo.author.image.contentUrl.match(/campaign\/(\d+)\//)[1]
-    const userInfo = (await fetch(`https://www.patreon.com/api/campaigns/${campaignId}`)).json()
-    const userId = userInfo.data.relationships.creator.data.id
+    var userId, campaignId
+    if (NEW_LAYOUT) {
+        for (let a of document.body.querySelectorAll("script")) {
+            if (!a.textContent.startsWith("self.__next_f.push([1")) continue
+            a = a.textContent.replaceAll("\\", "")
+            const m = a.match(/\$L27.+{"campaign":{"data":{"id":"(\d+)".+api\/user\/(\d+)/)
+            if (!m) continue
+            campaignId = m[1]
+            userId = m[2]
+            break
+        }
+    }
+    else {
+        const campaignInfo = JSON.parse(document.head.querySelector("script[type='application/ld+json']").textContent)
+        campaignId = campaignInfo.author.image.contentUrl.match(/campaign\/(\d+)\//)[1]
+        const userInfo = (await fetch(`https://www.patreon.com/api/campaigns/${campaignId}`)).json()
+        userId = userInfo.data.relationships.creator.data.id
+    }
     /** @type {User} */
     const user = {
         id: userId,
@@ -52,7 +70,7 @@ async function processProfile(username) {
 }
 
 /** @param {SerializedUser} user */
-function markProfile(user) {
+async function markProfile(user) {
     // Clear existing mark just in case.
     document.getElementById(MESSAGE_CONTAINER.id)?.remove()
     if (!user) return // Not on a list
@@ -65,7 +83,13 @@ function markProfile(user) {
         container.append(msgCopy)
     }
     // Central user info, under the post count.
-    document.querySelector("ul[class^=sc-]").after(container)
+    if (NEW_LAYOUT) {
+        await domExist("div[style^='--creator'] .sc-2c79702b-0.jrAvmO > button")
+        document.querySelector("div[style^='--creator'] > .cm-boPIeQ").after(container)
+    }
+    else {
+        document.querySelector("ul[class^=sc-]").after(container)
+    }
 }
 
 // Communication //
@@ -87,8 +111,7 @@ function checkUser(user) {
 function msgResponder(msg, _sender, answer) {
     console.debug("Received:", msg)
     if (msg.action == "get-user") {
-        let target = new URL(msg.targetLink)
-        let username = getNamedPath(target.pathname)
+        let username = getNamedPath(new URL(msg.targetLink)).loc
         let user = USER_MAP[username.toLowerCase()]
         if (!user) {
             answer(undefined)

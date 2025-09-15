@@ -66,7 +66,10 @@
          "matches": [
             "https://*.patreon.com/*"
          ],
-         "js": ["src/platforms/patreon.js"],
+         "js": [
+            "src/platform_utils/dom_exist.js",
+            "src/platforms/patreon.js"
+         ],
          "css": ["src/platforms/patreon.css"]
       }
    ],

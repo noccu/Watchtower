@@ -25,6 +25,11 @@
     gap: 0.35em;
 }
 
+/* New layout */
+div[style^='--creator'] > #profile-msg-container {
+    justify-content: left;
+}
+
 .profile-mark {
     background-color: var(--default-mark-color);
 }

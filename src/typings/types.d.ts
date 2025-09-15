@@ -109,3 +109,5 @@ interface ReportOptions {
     /** Request review to remove user from list. */
     appeal: boolean
 }
+
+function domExist(selector: string, interval=500, timeout=15000): Promise<Element>
