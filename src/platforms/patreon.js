@@ -52,7 +52,7 @@ async function processProfile(username) {
     }
     else {
         const campaignInfo = JSON.parse(document.head.querySelector("script[type='application/ld+json']").textContent)
-        campaignId = campaignInfo.author.image.contentUrl.match(/campaign\/(\d+)\//)[1]
+        campaignId = campaignInfo.mainEntity.image.contentUrl.match(/campaign\/(\d+)\//)[1]
         const userInfo = await fetch(`https://www.patreon.com/api/campaigns/${campaignId}`).then(d=>d.json())
         userId = userInfo.data.relationships.creator.data.id
     }
