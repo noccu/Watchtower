@@ -129,6 +129,10 @@ export function indexSingleUser(plat, user) {
  * @param {PLATFORM} plat
  * @param {User} user */
 export function lookupUser(plat, user) {
+    if (user.id === undefined) {
+        console.warn(`Invalid user lookup: ${user}`)
+        return
+    }
     return USERS[plat][user.id]
 }
 
