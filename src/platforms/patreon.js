@@ -43,7 +43,7 @@ async function processProfile(username) {
         for (let a of document.body.querySelectorAll("script")) {
             if (!a.textContent.startsWith("self.__next_f.push([1")) continue
             a = a.textContent.replaceAll("\\", "")
-            const m = a.match(/\$L27.+{"campaign":{"data":{"id":"(\d+)".+api\/user\/(\d+)/)
+            const m = a.match(/{"campaign":{"data":{"id":"(\d+)".+api\/user\/(\d+)/)
             if (!m) continue
             campaignId = m[1]
             userId = m[2]
