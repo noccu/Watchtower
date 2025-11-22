@@ -84,7 +84,7 @@ async function markProfile(user) {
     }
     // Central user info, under the post count.
     if (NEW_LAYOUT) {
-        await domExist("div[style^='--creator'] .sc-2c79702b-0.jrAvmO > button")
+        await domExist("div[style^='--creator'] .sc-2c79702b-0 > button")
         document.querySelector("div[style^='--creator'] > .cm-boPIeQ").after(container)
     }
     else {
