@@ -91,9 +91,18 @@ function msgResponder(msg, _sender, answer) {
 // Load //
 
 function onLoad() {
-    chrome.runtime.onMessage.addListener(msgResponder)
-    window.addEventListener("DOMContentLoaded", parseLocation)
+    parseLocation()
+    const observer = new MutationObserver(changes => {
+        // if (changes[0].removedNodes[0]?.id != "nprogress") return
+        if (changes[0].target.classList.contains("is-loading")) return
+        parseLocation()
+    })
+    observer.observe(document.querySelector("#root"), {
+        attributes: true,
+        attributeFilter: ["class"]
+    })
 }
 
-onLoad()
+chrome.runtime.onMessage.addListener(msgResponder)
+window.addEventListener("DOMContentLoaded", onLoad)
 console.log(`${chrome.runtime.getManifest().name} loaded.`)
