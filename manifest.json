@@ -71,6 +71,15 @@
             "src/platforms/patreon.js"
          ],
          "css": ["src/platforms/patreon.css"]
+      },
+      {
+         "run_at": "document_start",
+         "world": "ISOLATED",
+         "matches": [
+            "https://subscribestar.adult/*"
+         ],
+         "js": ["src/platforms/subscribestar.js"],
+         "css": ["src/platforms/subscribestar.css"]
       }
    ],
    "options_page": "src/options/options.html",

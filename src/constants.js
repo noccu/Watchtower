@@ -4,14 +4,16 @@ export var DBG = true
 export const PLATFORMS = {
     "twitter": "rest_id",
     "misskey": "id",
-    "patreon": "id"
+    "patreon": "id",
+    "subscribestar": "id"
 }
 
 export const reportTargets = [
     "https://twitter.com/*",
     "https://x.com/*",
     "https://misskey.io/*",
-    "https://www.patreon.com/*"
+    "https://www.patreon.com/*",
+    "https://subscribestar.adult/*"
 ]
 
 // The extension's default options
