@@ -1,6 +1,7 @@
 Watchtower is a browser extension that adds informational tags to users on internet platforms through custom, auto-updatable lists created and curated by the community. Lists can be made for any topic or goal. Users are tracked by ID wherever possible. Watchtower works on ~~all modern browsers~~ at least chrome.
 
-> **This project is still in pre-release and available for testing and feedback only.**
+> [!WARNING]
+> This project is still in pre-release and available for testing and feedback only.
 
 # Supported platforms
 - Twitter
