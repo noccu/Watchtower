@@ -86,7 +86,9 @@ type SerializedList = Omit<List, "users">
 
 type PLATFORMS = {
     twitter,
-    pixiv
+    pixiv,
+    patreon,
+    subscribestar,
 }
 type PLATFORM = keyof PLATFORMS
 type PlatformKeyed<T> = {[plat in PLATFORM]: T}

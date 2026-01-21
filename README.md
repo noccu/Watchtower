@@ -5,7 +5,9 @@ Watchtower is a browser extension that adds informational tags to users on inter
 # Supported platforms
 - Twitter
 - Misskey
-- (Much more coming)
+- Patreon
+- SubscribeStar
+- (More coming)
 
 # Install
 Currently, you need to enable developer mode and load the extension unpacked from a folder.  
